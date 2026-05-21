@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Mini Moodle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #1e3a8a;
+            --blue-mid: #2d52b8;
+            --blue-light: #dbeafe;
+            --accent: #6366f1;
+            --accent-light: #e0e7ff;
+            --green: #059669;
+            --red: #dc2626;
+            --red-light: #fee2e2;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-700: #334155;
+            --gray-900: #0f172a;
+            --radius: 12px;
+            --radius-lg: 18px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+            --shadow-hover: 0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.08);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family:'DM Sans',sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+        }
+        .logo-area {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .logo-mark {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--blue);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'DM Serif Display', serif;
+            color: white;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .app-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            color: var(--gray-900);
+        }
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 32px 28px;
+            border: 1px solid var(--gray-200);
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity:0; transform:translateY(8px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+        .card-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: var(--gray-900);
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--gray-300);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            background: var(--gray-50);
+            transition: 0.2s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+        .btn {
+            width: 100%;
+            padding: 11px 18px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--blue);
+            color: white;
+        }
+        .btn:hover {
+            background: var(--blue-mid);
+            transform: translateY(-1px);
+        }
+        .alt-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+        .alt-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .alt-link a:hover {
+            text-decoration: underline;
+        }
+        .error-msg {
+            background: var(--red-light);
+            color: var(--red);
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="logo-area">
+        <div class="logo-mark">M</div>
+        <div class="app-name">Mini Moodle</div>
+    </div>
+    <div class="card">
+        <h2 class="card-title">Iniciar Sesión</h2>
+        <div class="error-msg" id="loginError"><i class="fa-solid fa-circle-exclamation"></i> <span></span></div>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="email">Correo electrónico</label>
+                <input class="form-input" type="email" id="email" placeholder="tu@correo.com" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="password">Contraseña</label>
+                <input class="form-input" type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button class="btn" type="submit"><i class="fa-solid fa-right-to-bracket"></i> Ingresar</button>
+        </form>
+        <div class="alt-link">
+            ¿No tienes cuenta? <a href="register.html">Regístrate</a>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    const res = await fetch('api/login.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, password})
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('moodle_current_user', JSON.stringify(data.user));
+        window.location.href = 'dashboard.php';
+    } else {
+        const err = await res.json();
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.style.display = 'flex';
+        errorDiv.querySelector('span').textContent = err.error;
+    }
+});
+</script>
+</body>
+</html>
