@@ -20,8 +20,22 @@ if ($method === 'GET') {
 if ($method === 'POST' && in_array($user['role'], ['teacher','admin'])) {
     $data = json_decode(file_get_contents('php://input'), true);
     if ($user['role'] === 'teacher') {
-        $stmt = $pdo->prepare("SELECT teacher_id FROM courses WHERE id=?");
-        $stmt->execute([$data['course_id']]);
+        $allowedColors = ['#FFF9C7', '#C7D1FF', '#FFF8E8', '#C2FFCB', '#FEE3FF', '#FFFFFF'];
+        $card_color = $data['card_color'] ?? '#FFFFFF';
+
+        if (!in_array($card_color, $allowedColors)) {
+            $card_color = '#FFFFFF';
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO units (course_id, title, description, icon_class, order_index, card_color) VALUES (?,?,?,?,?,?)");
+        $stmt->execute([
+            $data['course_id'],
+            $data['title'],
+            $data['description'] ?? '',
+            $data['icon_class'] ?? 'gen',
+            $data['order_index'] ?? 0,
+            $card_color
+        ]);
         $c = $stmt->fetch();
         if (!$c || $c['teacher_id'] != $user['id']) { http_response_code(403); exit; }
     }
@@ -38,8 +52,22 @@ if ($method === 'PUT' && in_array($user['role'], ['teacher','admin'])) {
     if (!$id) { http_response_code(400); exit; }
     // verificar propiedad
     // ...
-    $stmt = $pdo->prepare("UPDATE units SET title=?, description=?, icon_class=?, order_index=? WHERE id=?");
-    $stmt->execute([$data['title'], $data['description']??'', $data['icon_class']??'gen', $data['order_index']??0, $id]);
+    $allowedColors = ['#FFF9C7', '#C7D1FF', '#FFF8E8', '#C2FFCB', '#FEE3FF', '#FFFFFF'];
+    $card_color = $data['card_color'] ?? '#FFFFFF';
+
+    if (!in_array($card_color, $allowedColors)) {
+        $card_color = '#FFFFFF';
+    }
+
+    $stmt = $pdo->prepare("UPDATE units SET title=?, description=?, icon_class=?, order_index=?, card_color=? WHERE id=?");
+    $stmt->execute([
+        $data['title'],
+        $data['description'] ?? '',
+        $data['icon_class'] ?? 'gen',
+        $data['order_index'] ?? 0,
+        $card_color,
+        $id
+    ]);
     echo json_encode(['success'=>true]);
     exit;
 }

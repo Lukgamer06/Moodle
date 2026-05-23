@@ -21,7 +21,7 @@ $course_name = $course ? $course['name'] : 'Curso';
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/estilos.css">
 </head>
-<body>
+<body class="course-page">
 
 <!-- TOPBAR -->
 <header class="topbar">
@@ -144,6 +144,7 @@ async function loadCourseIntro() {
   if (!res.ok) return;
   const course = await res.json();
   document.getElementById('introText').innerHTML = course.description || 'Bienvenido al curso.';
+  document.getElementById('courseIntro').style.background = course.card_color || '#FFFFFF';
 }
 
 // ── CARGAR UNIDADES ──
@@ -152,13 +153,13 @@ async function loadUnits() {
   const units = await res.json();
   const container = document.getElementById('unitsAccordion');
   container.innerHTML = units.map(unit => `
-    <div class="unit-acc-item">
+    <div class="unit-acc-item customizable-card" style="background:${unit.card_color || '#FFFFFF'}">
       <button class="unit-acc-header" onclick="toggleUnit(this)">
         <div class="unit-acc-left">
           <div class="unit-icon-sm ${unit.icon_class}"><i class="fa-solid fa-book"></i></div>
           <div>
             <div class="unit-acc-title">${unit.title}</div>
-            <div class="unit-acc-desc">${unit.description || ''}</div>
+            <div class="unit-acc-desc html-content">${unit.description || ''}</div>
           </div>
         </div>
         <div class="unit-acc-right">

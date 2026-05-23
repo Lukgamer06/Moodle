@@ -13,11 +13,11 @@ $user = $_SESSION['user'];
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/estilos.css">
 </head>
-<body>
+<body class="dashboard-page">
 <header class="topbar">
     <div class="topbar-left">
         <div class="logo-mark">M</div>
-        <span class="app-title">Mini Moodle</span>
+        <span class="app-title">Moodle</span>
     </div>
     <div class="topbar-right" id="topbarRight"></div>
 </header>
