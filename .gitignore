@@ -1,0 +1,7 @@
+.env
+docker/nginx/ssl/
+uploads/
+*.log
+mysql_data/
+.DS_Store
+Thumbs.db
