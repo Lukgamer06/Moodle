@@ -203,7 +203,7 @@ $course_name = $course['name'];
     </div>
     <div class="form-group"><label class="form-label">Ícono</label>
       <select class="form-select" id="unitIcon">
-        <option value="hw">🔧 Hardware</option><option value="net">🌐 Redes</option><option value="srv">🖥️ Servidores</option><option value="virt">☁️ Virtualización</option><option value="gen">📘 General</option>
+        <option value="hw">🟦 Emoji Libro </option><option value="net">🟩 Emoji Libro</option><option value="srv">🟪 Emoji Libro</option><option value="virt">🟨 Emoji Libro</option><option value="gen">⬜ Emoji Libro</option>
       </select>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
@@ -551,6 +551,26 @@ async function saveUnit() {
   });
 
   closeModal('unit');
+  loadUnits();
+}
+
+async function deleteUnit(id) {
+  if (!confirm('¿Eliminar esta unidad y todo su contenido?')) return;
+
+  const res = await fetch(`api/units.php?id=${id}`, {
+    method: 'DELETE'
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
+
+  if (!res.ok) {
+    alert(data.error || 'No se pudo eliminar la unidad.');
+    return;
+  }
+
   loadUnits();
 }
 

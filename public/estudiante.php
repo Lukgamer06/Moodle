@@ -154,7 +154,9 @@ async function loadUnits() {
   const container = document.getElementById('unitsAccordion');
   container.innerHTML = units.map(unit => `
     <div class="unit-acc-item customizable-card" style="background:${unit.card_color || '#FFFFFF'}">
-      <button class="unit-acc-header" onclick="toggleUnit(this)">
+      <button class="unit-acc-header" 
+              style="background:${unit.card_color || '#FFFFFF'}"
+              onclick="toggleUnit(this)">
         <div class="unit-acc-left">
           <div class="unit-icon-sm ${unit.icon_class}"><i class="fa-solid fa-book"></i></div>
           <div>
@@ -167,7 +169,7 @@ async function loadUnits() {
           <i class="fa-solid fa-chevron-down unit-chevron"></i>
         </div>
       </button>
-      <div class="unit-acc-body">
+      <div class="unit-acc-body" style="background:${unit.card_color || '#FFFFFF'}">
         <div class="unit-section">
           <div class="unit-section-title"><i class="fa-solid fa-paperclip"></i> Recursos</div>
           <div class="resources-container" data-unit-id="${unit.id}">Cargando...</div>
