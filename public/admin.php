@@ -57,6 +57,13 @@ if ($course_id) {
   <button class="nav-btn" onclick="showScreen('grades')"><i class="fa-solid fa-graduation-cap"></i> Calificaciones</button>
 </nav>
 
+<div class="course-back-area">
+  <button class="course-back-btn" onclick="window.location.href='dashboard.php'">
+    <i class="fa-solid fa-arrow-left"></i>
+    <span>Regresar</span>
+  </button>
+</div>
+
 <main class="page-wrap">
   <div class="admin-notice visible"><i class="fa-solid fa-shield-halved"></i> Modo Administrador — Puedes editar todo el contenido.</div>
   

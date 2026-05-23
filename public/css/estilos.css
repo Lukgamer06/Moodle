@@ -640,14 +640,6 @@ body.course-page .unit-acc-item {
   line-height: 1.7;
 }
 
-.html-content img,
-.html-editor img {
-  max-width: 100%;
-  border-radius: 12px;
-  margin: 10px 0;
-  display: block;
-}
-
 .modal-lg {
   max-width: 720px;
 }
@@ -695,4 +687,120 @@ body.course-page .unit-acc-item {
 
 .unit-acc-item.customizable-card .unit-acc-header:hover {
   filter: brightness(0.97);
+}
+
+/* ── BOTÓN REGRESAR EN PANTALLAS DE CURSO ── */
+.course-back-area {
+  position: fixed;
+  top: 128px;
+  left: 28px;
+  z-index: 850;
+}
+
+.course-back-btn {
+  border: 1px solid rgba(30, 58, 138, 0.18);
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--blue);
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  box-shadow: 0 8px 24px rgba(30, 58, 138, 0.16);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.course-back-btn i {
+  font-size: 13px;
+}
+
+.course-back-btn:hover {
+  transform: translateX(-3px);
+  background: var(--blue);
+  color: #ffffff;
+  box-shadow: 0 12px 28px rgba(30, 58, 138, 0.26);
+}
+
+/* Da espacio para que el botón no se monte sobre las tarjetas */
+body.course-page .page-wrap {
+  padding-top: 160px;
+}
+
+@media (max-width: 768px) {
+  .course-back-area {
+    top: 116px;
+    left: 18px;
+  }
+
+  .course-back-btn {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  body.course-page .page-wrap {
+    padding-top: 165px;
+  }
+}
+
+/* ── IMÁGENES DENTRO DE PRESENTACIÓN / UNIDADES ── */
+.html-content img,
+.html-editor img,
+.course-img {
+  display: block;
+  border-radius: 14px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+  object-fit: cover;
+  height: auto;
+}
+
+/* Imagen seleccionada dentro del editor */
+.selected-editor-img {
+  outline: 4px solid #1e3a8a;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(30, 58, 138, 0.18);
+}
+
+/* Centrado */
+.course-img-center {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Tamaños */
+.course-img-small {
+  width: 35%;
+  max-width: 320px;
+}
+
+.course-img-medium {
+  width: 70%;
+  max-width: 720px;
+}
+
+.course-img-large {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Las imágenes que no tengan clase quedan grandes pero controladas */
+.html-content img:not(.course-img),
+.html-editor img:not(.course-img) {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Para que no se deformen en celular */
+@media (max-width: 768px) {
+  .course-img-small,
+  .course-img-medium,
+  .course-img-large {
+    width: 100%;
+    max-width: 100%;
+  }
 }

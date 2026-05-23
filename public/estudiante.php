@@ -54,6 +54,13 @@ $course_name = $course ? $course['name'] : 'Curso';
   <button class="nav-btn" onclick="showScreen('grades')"><i class="fa-solid fa-graduation-cap"></i> Calificaciones</button>
 </nav>
 
+<div class="course-back-area">
+  <button class="course-back-btn" onclick="window.location.href='dashboard.php'">
+    <i class="fa-solid fa-arrow-left"></i>
+    <span>Regresar</span>
+  </button>
+</div>
+
 <!-- FORUM DRAWER -->
 <aside id="forumDrawer" class="drawer">
   <div class="drawer-header">

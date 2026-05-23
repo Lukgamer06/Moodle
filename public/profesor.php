@@ -52,6 +52,13 @@ $course_name = $course['name'];
   <button class="nav-btn" onclick="showScreen('grades')"><i class="fa-solid fa-graduation-cap"></i> Calificaciones</button>
 </nav>
 
+<div class="course-back-area">
+  <button class="course-back-btn" onclick="window.location.href='dashboard.php'">
+    <i class="fa-solid fa-arrow-left"></i>
+    <span>Regresar</span>
+  </button>
+</div>
+
 <!-- FORUM DRAWER -->
 <aside id="forumDrawer" class="drawer">
   <div class="drawer-header">
@@ -143,6 +150,25 @@ $course_name = $course['name'];
         </button>
         <button type="button" onclick="insertImageUrl('introEditor')">
           <i class="fa-solid fa-image"></i> Imagen URL
+        </button>
+        <button type="button" onmousedown="event.preventDefault()" onclick="resizeSelectedImage('small')">
+          Imagen pequeña
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="resizeSelectedImage('medium')">
+          Imagen mediana
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="resizeSelectedImage('large')">
+          Imagen grande
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="centerSelectedImage()">
+          <i class="fa-solid fa-align-center"></i> Centrar imagen
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="deleteSelectedImage()">
+          <i class="fa-solid fa-trash"></i> Borrar imagen
         </button>
       </div>
 
@@ -313,15 +339,139 @@ function formatEditor(command) {
   document.execCommand(command, false, null);
 }
 
+let selectedEditorImage = null;
+
+// Detecta cuando haces clic en una imagen dentro del editor
+document.addEventListener('click', function (e) {
+  const clickedImage = e.target.closest('.html-editor img');
+
+  if (!clickedImage) return;
+
+  if (selectedEditorImage) {
+    selectedEditorImage.classList.remove('selected-editor-img');
+  }
+
+  selectedEditorImage = clickedImage;
+  selectedEditorImage.classList.add('selected-editor-img');
+});
+
+// Limpia la URL si por error pegan una etiqueta <img>
+function cleanImageUrl(value) {
+  value = String(value || '').trim();
+
+  const match = value.match(/src=["']([^"']+)["']/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  return value;
+}
+
+// Insertar imagen por URL
 function insertImageUrl(editorId) {
-  const url = prompt('Pega la URL de la imagen:');
+  let url = prompt('Pega SOLO la URL de la imagen. No pegues código HTML.');
   if (!url) return;
+
+  url = cleanImageUrl(url);
+
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    alert('Debes pegar una URL válida que empiece por http:// o https://');
+    return;
+  }
 
   const editor = document.getElementById(editorId);
   if (!editor) return;
 
+  const alt = prompt('Texto alternativo de la imagen:', 'Imagen del curso') || 'Imagen del curso';
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = alt;
+  img.className = 'course-img course-img-medium course-img-center';
+
+  const spaceAfter = document.createElement('p');
+  spaceAfter.innerHTML = '<br>';
+
   editor.focus();
-  document.execCommand('insertImage', false, url);
+
+  const selection = window.getSelection();
+
+  if (selection && selection.rangeCount > 0 && editor.contains(selection.anchorNode)) {
+    const range = selection.getRangeAt(0);
+
+    range.deleteContents();
+    range.insertNode(spaceAfter);
+    range.insertNode(img);
+
+    const newRange = document.createRange();
+    newRange.setStart(spaceAfter, 0);
+    newRange.collapse(true);
+
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  } else {
+    editor.appendChild(img);
+    editor.appendChild(spaceAfter);
+
+    const newRange = document.createRange();
+    newRange.setStart(spaceAfter, 0);
+    newRange.collapse(true);
+
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+
+  if (selectedEditorImage) {
+    selectedEditorImage.classList.remove('selected-editor-img');
+  }
+
+  selectedEditorImage = img;
+  selectedEditorImage.classList.add('selected-editor-img');
+}
+
+// Obtener imagen seleccionada
+function getSelectedImage() {
+  if (selectedEditorImage && document.body.contains(selectedEditorImage)) {
+    return selectedEditorImage;
+  }
+
+  alert('Primero haz clic sobre la imagen dentro del editor. Debe quedar marcada con un borde azul.');
+  return null;
+}
+
+// Cambiar tamaño
+function resizeSelectedImage(size) {
+  const img = getSelectedImage();
+  if (!img) return;
+
+  img.classList.remove('course-img-small', 'course-img-medium', 'course-img-large');
+
+  if (size === 'small') {
+    img.classList.add('course-img-small');
+  } else if (size === 'large') {
+    img.classList.add('course-img-large');
+  } else {
+    img.classList.add('course-img-medium');
+  }
+
+  img.classList.add('course-img', 'course-img-center');
+}
+
+// Centrar imagen
+function centerSelectedImage() {
+  const img = getSelectedImage();
+  if (!img) return;
+
+  img.classList.add('course-img-center');
+}
+
+// Borrar imagen seleccionada
+function deleteSelectedImage() {
+  const img = getSelectedImage();
+  if (!img) return;
+
+  img.remove();
+  selectedEditorImage = null;
 }
 
 function selectCourseColor(color) {
