@@ -4,11 +4,9 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl:/etc/nginx/ssl
       - ../public:/var/www/html/public
       - ../uploads:/var/www/html/uploads
     depends_on:
