@@ -63,16 +63,24 @@ if ($method === 'PUT' && in_array($user['role'], ['admin','teacher'])) {
     $data = json_decode(file_get_contents('php://input'), true);
     $id = $data['id'] ?? null;
     if (!$id) { http_response_code(400); echo json_encode(['error'=>'ID requerido']); exit; }
-    $stmt = $pdo->prepare("SELECT teacher_id, name, description FROM courses WHERE id=?");
+    $stmt = $pdo->prepare("SELECT teacher_id, name, description, card_color FROM courses WHERE id=?");
     $stmt->execute([$id]);
     $course = $stmt->fetch();
     if (!$course) { http_response_code(404); echo json_encode(['error'=>'Curso no encontrado']); exit; }
     if ($user['role'] === 'teacher' && $course['teacher_id'] != $user['id']) { http_response_code(403); echo json_encode(['error'=>'No autorizado']); exit; }
+    $allowedColors = ['#FFF9C7', '#C7D1FF', '#FFF8E8', '#C2FFCB', '#FEE3FF', '#FFFFFF'];
+
     $name = trim($data['name'] ?? $course['name']);
-    $desc = trim($data['description'] ?? $course['description']);
+    $desc = $data['description'] ?? $course['description'];
     $teacher_id = $data['teacher_id'] ?? $course['teacher_id'];
-    $stmt = $pdo->prepare("UPDATE courses SET name=?, description=?, teacher_id=? WHERE id=?");
-    $stmt->execute([$name, $desc, $teacher_id, $id]);
+
+    $card_color = $data['card_color'] ?? $course['card_color'] ?? '#FFFFFF';
+    if (!in_array($card_color, $allowedColors)) {
+        $card_color = '#FFFFFF';
+    }
+
+    $stmt = $pdo->prepare("UPDATE courses SET name=?, description=?, teacher_id=?, card_color=? WHERE id=?");
+    $stmt->execute([$name, $desc, $teacher_id, $card_color, $id]);
     echo json_encode(['success'=>true]);
     exit;
 }

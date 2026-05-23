@@ -22,7 +22,7 @@ if ($course_id) {
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/estilos.css">
 </head>
-<body>
+<body class="course-page">
 
 <header class="topbar">
   <div class="topbar-left">
@@ -61,14 +61,19 @@ if ($course_id) {
   <div class="admin-notice visible"><i class="fa-solid fa-shield-halved"></i> Modo Administrador — Puedes editar todo el contenido.</div>
   
   <div id="screen-course" class="screen active">
-    <div class="card">
+    <div class="card customizable-card" id="courseIntroCard" style="background:<?php echo htmlspecialchars($course['card_color'] ?? '#FFFFFF'); ?>">
       <div class="card-header">
         <h2 class="section-title">Presentación del Curso</h2>
         <div class="edit-toolbar visible">
-          <button class="btn btn-ghost btn-sm" onclick="editIntro()"><i class="fa-solid fa-pen"></i> Editar</button>
+          <button class="btn btn-ghost btn-sm" onclick="editIntro()">
+            <i class="fa-solid fa-pen"></i> Editar
+          </button>
         </div>
       </div>
-      <p class="section-text" id="introText"><?php echo htmlspecialchars($course['description'] ?? ''); ?></p>
+
+      <div class="section-text html-content" id="introText">
+        <?php echo $course['description'] ?? ''; ?>
+      </div>
     </div>
     <div class="card">
       <div class="card-header">
@@ -119,11 +124,53 @@ if ($course_id) {
   <div id="overlay" class="overlay"></div>
 
   <!-- MODALES (los mismos de antes) -->
-  <!-- Editar Introducción -->
+  <!-- Editar Introducción / Personalizar Curso -->
   <div class="modal-overlay" id="modal-editIntro">
-    <div class="modal">
-      <div class="modal-header"><span class="modal-title">Editar Presentación</span><button class="modal-close" onclick="closeModal('editIntro')"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="editIntroDesc"></textarea></div>
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <span class="modal-title">Personalizar Curso</span>
+        <button class="modal-close" onclick="closeModal('editIntro')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Presentación del curso</label>
+
+        <div class="editor-toolbar">
+          <button type="button" onclick="formatEditor('bold')"><b>B</b></button>
+          <button type="button" onclick="formatEditor('italic')"><i>I</i></button>
+          <button type="button" onclick="formatEditor('underline')"><u>U</u></button>
+          <button type="button" onclick="formatEditor('insertUnorderedList')">
+            <i class="fa-solid fa-list-ul"></i>
+          </button>
+          <button type="button" onclick="formatEditor('justifyLeft')">
+            <i class="fa-solid fa-align-left"></i>
+          </button>
+          <button type="button" onclick="formatEditor('justifyCenter')">
+            <i class="fa-solid fa-align-center"></i>
+          </button>
+          <button type="button" onclick="insertImageUrl('introEditor')">
+            <i class="fa-solid fa-image"></i> Imagen URL
+          </button>
+        </div>
+
+        <div id="introEditor" class="html-editor" contenteditable="true"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Color de la caja de presentación</label>
+        <input type="hidden" id="courseCardColor" value="<?php echo htmlspecialchars($course['card_color'] ?? '#FFFFFF'); ?>">
+
+        <div class="color-palette">
+          <button type="button" class="color-dot" style="background:#FFF9C7" onclick="selectCourseColor('#FFF9C7')"></button>
+          <button type="button" class="color-dot" style="background:#C7D1FF" onclick="selectCourseColor('#C7D1FF')"></button>
+          <button type="button" class="color-dot" style="background:#FFF8E8" onclick="selectCourseColor('#FFF8E8')"></button>
+          <button type="button" class="color-dot" style="background:#C2FFCB" onclick="selectCourseColor('#C2FFCB')"></button>
+          <button type="button" class="color-dot" style="background:#FEE3FF" onclick="selectCourseColor('#FEE3FF')"></button>
+        </div>
+      </div>
+
       <div style="display:flex;gap:10px;justify-content:flex-end">
         <button class="btn btn-ghost" onclick="closeModal('editIntro')">Cancelar</button>
         <button class="btn btn-primary" onclick="saveIntro()">Guardar</button>
@@ -137,7 +184,36 @@ if ($course_id) {
       <div class="modal-header"><span class="modal-title" id="modalUnitTitle">Nueva Unidad</span><button class="modal-close" onclick="closeModal('unit')"><i class="fa-solid fa-xmark"></i></button></div>
       <input type="hidden" id="unitEditId">
       <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="unitTitle"></div>
-      <div class="form-group"><label class="form-label">Descripción breve</label><input class="form-input" id="unitDesc"></div>
+      <div class="form-group">
+        <label class="form-label">Descripción breve</label>
+
+        <div class="editor-toolbar">
+          <button type="button" onclick="formatEditor('bold')"><b>B</b></button>
+          <button type="button" onclick="formatEditor('italic')"><i>I</i></button>
+          <button type="button" onclick="formatEditor('underline')"><u>U</u></button>
+          <button type="button" onclick="formatEditor('insertUnorderedList')">
+            <i class="fa-solid fa-list-ul"></i>
+          </button>
+          <button type="button" onclick="insertImageUrl('unitDesc')">
+            <i class="fa-solid fa-image"></i> Imagen URL
+          </button>
+        </div>
+
+        <div id="unitDesc" class="html-editor small-editor" contenteditable="true"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Color de la unidad</label>
+        <input type="hidden" id="unitCardColor" value="#FFFFFF">
+
+        <div class="color-palette">
+          <button type="button" class="color-dot" style="background:#FFF9C7" onclick="selectUnitColor('#FFF9C7')"></button>
+          <button type="button" class="color-dot" style="background:#C7D1FF" onclick="selectUnitColor('#C7D1FF')"></button>
+          <button type="button" class="color-dot" style="background:#FFF8E8" onclick="selectUnitColor('#FFF8E8')"></button>
+          <button type="button" class="color-dot" style="background:#C2FFCB" onclick="selectUnitColor('#C2FFCB')"></button>
+          <button type="button" class="color-dot" style="background:#FEE3FF" onclick="selectUnitColor('#FEE3FF')"></button>
+        </div>
+      </div>
       <div class="form-group"><label class="form-label">Ícono</label>
         <select class="form-select" id="unitIcon">
           <option value="hw">🔧 Hardware</option><option value="net">🌐 Redes</option><option value="srv">🖥️ Servidores</option><option value="virt">☁️ Virtualización</option><option value="gen">📘 General</option>
@@ -240,18 +316,72 @@ function jsStringArg(value) {
 }
 
 // ── INTRODUCCIÓN ──
+let currentCourseCardColor = <?php echo json_encode($course['card_color'] ?? '#FFFFFF'); ?>;
+
+function formatEditor(command) {
+  document.execCommand(command, false, null);
+}
+
+function insertImageUrl(editorId) {
+  const url = prompt('Pega la URL de la imagen:');
+  if (!url) return;
+
+  const editor = document.getElementById(editorId);
+  if (!editor) return;
+
+  editor.focus();
+  document.execCommand('insertImage', false, url);
+}
+
+function selectCourseColor(color) {
+  currentCourseCardColor = color;
+
+  const inputColor = document.getElementById('courseCardColor');
+  if (inputColor) inputColor.value = color;
+
+  const introCard = document.getElementById('courseIntroCard');
+  if (introCard) introCard.style.background = color;
+
+  document.querySelectorAll('#modal-editIntro .color-dot').forEach(dot => {
+    dot.classList.remove('selected');
+  });
+
+  const selectedDot = Array.from(document.querySelectorAll('#modal-editIntro .color-dot'))
+    .find(dot => dot.getAttribute('onclick')?.includes(color));
+
+  if (selectedDot) selectedDot.classList.add('selected');
+}
+
 function editIntro() {
-  document.getElementById('editIntroDesc').value = document.getElementById('introText').textContent;
+  const editor = document.getElementById('introEditor');
+  const introText = document.getElementById('introText');
+
+  editor.innerHTML = introText.innerHTML;
+
+  const colorInput = document.getElementById('courseCardColor');
+  if (colorInput) colorInput.value = currentCourseCardColor || '#FFFFFF';
+
   openModal('editIntro');
 }
+
 async function saveIntro() {
-  const desc = document.getElementById('editIntroDesc').value;
+  const desc = document.getElementById('introEditor').innerHTML;
+  const cardColor = document.getElementById('courseCardColor').value || '#FFFFFF';
+
   await fetch('api/courses.php', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({id: courseId, description: desc})
+    body: JSON.stringify({
+      id: courseId,
+      description: desc,
+      card_color: cardColor
+    })
   });
-  document.getElementById('introText').textContent = desc;
+
+  document.getElementById('introText').innerHTML = desc;
+  document.getElementById('courseIntroCard').style.background = cardColor;
+  currentCourseCardColor = cardColor;
+
   closeModal('editIntro');
 }
 
@@ -265,24 +395,29 @@ async function loadUnits() {
     return;
   }
   container.innerHTML = units.map(unit => `
-    <div class="unit-acc-item">
-      <div class="unit-acc-header" role="button" tabindex="0" onclick="toggleUnit(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUnit(this)}">
+    <div class="unit-acc-item customizable-card" style="background:${unit.card_color || '#FFFFFF'}">
+      <div class="unit-acc-header" 
+           style="background:${unit.card_color || '#FFFFFF'}"
+           role="button" 
+           tabindex="0" 
+           onclick="toggleUnit(this)" 
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUnit(this)}">
         <div class="unit-acc-left">
           <div class="unit-icon-sm ${unit.icon_class}"><i class="fa-solid fa-book"></i></div>
           <div>
             <div class="unit-acc-title">${escapeAttr(unit.title)}</div>
-            <div class="unit-acc-desc">${escapeAttr(unit.description || '')}</div>
+            <div class="unit-acc-desc html-content">${unit.description || ''}</div>
           </div>
         </div>
         <div class="unit-acc-right">
           <div class="edit-toolbar visible" style="gap:4px">
-            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); editUnit(${unit.id}, ${jsStringArg(unit.title)}, ${jsStringArg(unit.description || '')}, ${jsStringArg(unit.icon_class)})"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); editUnit(${unit.id}, ${jsStringArg(unit.title)}, ${jsStringArg(unit.description || '')}, ${jsStringArg(unit.icon_class)}, ${jsStringArg(unit.card_color || '#FFFFFF')})"><i class="fa-solid fa-pen"></i></button>
             <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); deleteUnit(${unit.id})"><i class="fa-solid fa-trash"></i></button>
           </div>
           <i class="fa-solid fa-chevron-down unit-chevron"></i>
         </div>
       </div>
-      <div class="unit-acc-body">
+      <div class="unit-acc-body" style="background:${unit.card_color || '#FFFFFF'}">
         <div class="unit-section">
           <div class="unit-section-title">
             <span><i class="fa-solid fa-paperclip"></i> Recursos</span>
@@ -306,39 +441,114 @@ async function loadUnits() {
   });
 }
 
+let currentUnitCardColor = '#FFFFFF';
+
+function selectUnitColor(color) {
+  currentUnitCardColor = color;
+
+  const input = document.getElementById('unitCardColor');
+  if (input) input.value = color;
+
+  document.querySelectorAll('#modal-unit .color-dot').forEach(dot => {
+    dot.classList.remove('selected');
+  });
+
+  const selectedDot = Array.from(document.querySelectorAll('#modal-unit .color-dot'))
+    .find(dot => dot.getAttribute('onclick')?.includes(color));
+
+  if (selectedDot) selectedDot.classList.add('selected');
+
+  const modal = document.querySelector('#modal-unit .modal');
+  if (modal) modal.style.border = `3px solid ${color}`;
+}
+
 function showAddUnitModal() {
   document.getElementById('modalUnitTitle').textContent = 'Nueva Unidad';
   document.getElementById('unitEditId').value = '';
   document.getElementById('unitTitle').value = '';
-  document.getElementById('unitDesc').value = '';
+  document.getElementById('unitDesc').innerHTML = '';
   document.getElementById('unitIcon').value = 'gen';
+
+  const unitColor = document.getElementById('unitCardColor');
+  if (unitColor) unitColor.value = '#FFFFFF';
+
+  currentUnitCardColor = '#FFFFFF';
+
+  document.querySelectorAll('#modal-unit .color-dot').forEach(dot => {
+    dot.classList.remove('selected');
+  });
+
+  const modal = document.querySelector('#modal-unit .modal');
+  if (modal) modal.style.border = '';
+
   openModal('unit');
 }
-function editUnit(id, title, desc, icon) {
+
+function editUnit(id, title, desc, icon, cardColor = '#FFFFFF') {
   document.getElementById('modalUnitTitle').textContent = 'Editar Unidad';
   document.getElementById('unitEditId').value = id;
   document.getElementById('unitTitle').value = title;
-  document.getElementById('unitDesc').value = desc;
+  document.getElementById('unitDesc').innerHTML = desc;
   document.getElementById('unitIcon').value = icon;
+  document.getElementById('unitCardColor').value = cardColor;
+
+  currentUnitCardColor = cardColor;
+
+  document.querySelectorAll('#modal-unit .color-dot').forEach(dot => {
+    dot.classList.remove('selected');
+  });
+
+  const selectedDot = Array.from(document.querySelectorAll('#modal-unit .color-dot'))
+    .find(dot => dot.getAttribute('onclick')?.includes(cardColor));
+
+  if (selectedDot) selectedDot.classList.add('selected');
+
+  const modal = document.querySelector('#modal-unit .modal');
+  if (modal) modal.style.border = `3px solid ${cardColor}`;
+
   openModal('unit');
 }
+
 async function saveUnit() {
   const id = document.getElementById('unitEditId').value;
   const title = document.getElementById('unitTitle').value.trim();
-  const description = document.getElementById('unitDesc').value.trim();
+  const description = document.getElementById('unitDesc').innerHTML.trim();
   const icon_class = document.getElementById('unitIcon').value;
+  const card_color = document.getElementById('unitCardColor').value || '#FFFFFF';
+
   if (!title) return alert('El título es obligatorio');
+
   const method = id ? 'PUT' : 'POST';
-  const body = { course_id: courseId, title, description, icon_class, order_index: 0 };
+  const body = {
+    course_id: courseId,
+    title,
+    description,
+    icon_class,
+    order_index: 0,
+    card_color
+  };
+
   if (id) body.id = id;
-  await fetch('api/units.php', {
+
+  const res = await fetch('api/units.php', {
     method,
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(body)
   });
+
+  if (!res.ok) {
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {}
+    alert(data.error || 'No se pudo guardar la unidad.');
+    return;
+  }
+
   closeModal('unit');
   loadUnits();
 }
+
 async function deleteUnit(id) {
   if (!confirm('¿Eliminar esta unidad y todo su contenido?')) return;
   await fetch(`api/units.php?id=${id}`, { method: 'DELETE' });
