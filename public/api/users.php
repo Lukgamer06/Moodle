@@ -13,8 +13,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 // GET: admin lista todos; otros obtienen su propio perfil
 if ($method === 'GET') {
-    if ($user['role'] === 'admin') {
-        $role_filter = $_GET['role'] ?? null;
+    $role_filter = $_GET['role'] ?? null;
+    if ($user['role'] === 'admin' || ($user['role'] === 'teacher' && $role_filter === 'student')) {
         if ($role_filter) {
             $stmt = $pdo->prepare("SELECT id, name, email, role, created_at FROM users WHERE role = ? ORDER BY name");
             $stmt->execute([$role_filter]);

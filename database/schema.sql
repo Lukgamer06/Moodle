@@ -53,11 +53,25 @@ CREATE TABLE resources (
 CREATE TABLE activities (
     id INT AUTO_INCREMENT PRIMARY KEY,
     unit_id INT NOT NULL,
+    activity_type ENUM('activity','quiz','evaluation') NOT NULL DEFAULT 'activity',
     title VARCHAR(255) NOT NULL,
     description TEXT,
     due_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (unit_id) REFERENCES units(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE quiz_questions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    activity_id INT NOT NULL,
+    question TEXT NOT NULL,
+    option_a VARCHAR(500) NOT NULL,
+    option_b VARCHAR(500) NOT NULL,
+    option_c VARCHAR(500) NOT NULL,
+    option_d VARCHAR(500) NOT NULL,
+    correct_option ENUM('a','b','c','d') NOT NULL,
+    order_index INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (activity_id) REFERENCES activities(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE submissions (
@@ -76,6 +90,7 @@ CREATE TABLE grades (
     submission_id INT NOT NULL,
     grade DECIMAL(3,1),
     graded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_submission_grade (submission_id),
     FOREIGN KEY (submission_id) REFERENCES submissions(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 

@@ -15,17 +15,29 @@ if ($method === 'GET') {
     exit;
 }
 if ($method === 'POST' && in_array($user['role'], ['teacher','admin'])) {
-    $unit_id = $_POST['unit_id'];
-    $name = $_POST['name'];
-    $type = $_POST['type'];
+    $unit_id = $_POST['unit_id'] ?? null;
+    $name = trim($_POST['name'] ?? '');
+    $type = $_POST['type'] ?? 'doc';
     $meta = $_POST['meta'] ?? '';
     $file_path = '';
-    if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+    if (!$unit_id || $name === '') { http_response_code(400); echo json_encode(['error'=>'Faltan datos']); exit; }
+    if ($type === 'video') {
+        $url = trim($_POST['youtube_url'] ?? '');
+        if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+            http_response_code(400); echo json_encode(['error'=>'Enlace de video inválido']); exit;
+        }
+        $file_path = $url;
+    } elseif (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
+        if ($type === 'pdf' && strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION)) !== 'pdf') {
+            http_response_code(400); echo json_encode(['error'=>'El archivo debe ser PDF']); exit;
+        }
         $uploadDir = __DIR__ . '/../uploads/';
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
         $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $_FILES['file']['name']);
         move_uploaded_file($_FILES['file']['tmp_name'], $uploadDir . $filename);
         $file_path = 'uploads/' . $filename;
+    } elseif ($type === 'pdf') {
+        http_response_code(400); echo json_encode(['error'=>'Carga un PDF']); exit;
     }
     $stmt = $pdo->prepare("INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES (?,?,?,?,?)");
     $stmt->execute([$unit_id, $type, $name, $file_path, $meta]);

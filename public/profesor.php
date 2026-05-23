@@ -150,8 +150,9 @@ $course_name = $course['name'];
     <div class="modal-header"><span class="modal-title">Nuevo Recurso</span><button class="modal-close" onclick="closeModal('resource')"><i class="fa-solid fa-xmark"></i></button></div>
     <input type="hidden" id="resourceUnitId">
     <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="resourceName"></div>
-    <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="resourceType"><option value="pdf">PDF</option><option value="video">Video</option><option value="doc">Documento</option></select></div>
-    <div class="form-group"><label class="form-label">Archivo (opcional)</label><input type="file" class="form-input" id="resourceFile"></div>
+    <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="resourceType" onchange="toggleResourceFields()"><option value="pdf">PDF</option><option value="video">Video</option><option value="doc">Documento</option></select></div>
+    <div class="form-group" id="resourceFileGroup"><label class="form-label">Archivo</label><input type="file" class="form-input" id="resourceFile" accept=".pdf,.doc,.docx"></div>
+    <div class="form-group" id="resourceVideoGroup" style="display:none"><label class="form-label">Enlace de YouTube</label><input class="form-input" id="resourceYoutubeUrl" placeholder="https://www.youtube.com/watch?v=..."></div>
     <div class="form-group"><label class="form-label">Meta (tamaño, duración...)</label><input class="form-input" id="resourceMeta" placeholder="Ej: 2.4 MB / 22 min"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('resource')">Cancelar</button>
@@ -166,9 +167,14 @@ $course_name = $course['name'];
     <div class="modal-header"><span class="modal-title" id="modalActivityTitle">Nueva Actividad</span><button class="modal-close" onclick="closeModal('activity')"><i class="fa-solid fa-xmark"></i></button></div>
     <input type="hidden" id="activityUnitId">
     <input type="hidden" id="activityEditId">
+    <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="activityType" onchange="toggleQuestionEditor()"><option value="activity">Actividad</option><option value="quiz">Quiz</option><option value="evaluation">Evaluación</option></select></div>
     <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="activityTitle"></div>
     <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="activityDesc"></textarea></div>
     <div class="form-group"><label class="form-label">Fecha límite</label><input type="date" class="form-input" id="activityDueDate"></div>
+    <div id="questionEditor" style="display:none">
+      <div class="form-group"><label class="form-label">Preguntas</label><div id="questionsList"></div></div>
+      <button class="btn btn-ghost btn-sm" onclick="addQuestionRow()"><i class="fa-solid fa-plus"></i> Agregar Pregunta</button>
+    </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('activity')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveActivity()">Guardar</button>
@@ -180,10 +186,12 @@ $course_name = $course['name'];
 <div class="modal-overlay" id="modal-enroll">
   <div class="modal">
     <div class="modal-header"><span class="modal-title">Matricular Estudiante</span><button class="modal-close" onclick="closeModal('enroll')"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="form-group"><label class="form-label">Estudiante</label><select class="form-select" id="enrollStudent"></select></div>
+    <div class="form-group"><label class="form-label">Buscar estudiante</label><input class="form-input" id="studentSearch" placeholder="Filtrar por nombre o correo" oninput="filterStudents()"></div>
+    <div class="form-group"><label class="form-label">Estudiante</label><select class="form-select" id="enrollStudentSelect"></select></div>
+    <div class="form-group"><label class="form-label">Matrícula masiva por correos</label><textarea class="form-textarea" id="bulkEnrollEmails" placeholder="correo1@dominio.com&#10;correo2@dominio.com"></textarea></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('enroll')">Cancelar</button>
-      <button class="btn btn-primary" onclick="enrollStudent()">Matricular</button>
+      <button class="btn btn-primary" onclick="enrollStudentToCourse()">Matricular</button>
     </div>
   </div>
 </div>
@@ -205,6 +213,23 @@ $course_name = $course['name'];
 <script>
 const courseId = <?php echo json_encode($course_id); ?>;
 const userId = <?php echo $user['id']; ?>;
+
+function escapeAttr(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function jsStringArg(value) {
+  const escaped = String(value ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\r/g, '\\r')
+    .replace(/\n/g, '\\n');
+  return escapeAttr(`'${escaped}'`);
+}
 
 function editIntro() {
   document.getElementById('editIntroDesc').value = document.getElementById('introText').textContent;
@@ -231,22 +256,22 @@ async function loadUnits() {
   }
   container.innerHTML = units.map(unit => `
     <div class="unit-acc-item">
-      <button class="unit-acc-header" onclick="toggleUnit(this)">
+      <div class="unit-acc-header" role="button" tabindex="0" onclick="toggleUnit(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUnit(this)}">
         <div class="unit-acc-left">
           <div class="unit-icon-sm ${unit.icon_class}"><i class="fa-solid fa-book"></i></div>
           <div>
-            <div class="unit-acc-title">${unit.title}</div>
-            <div class="unit-acc-desc">${unit.description || ''}</div>
+            <div class="unit-acc-title">${escapeAttr(unit.title)}</div>
+            <div class="unit-acc-desc">${escapeAttr(unit.description || '')}</div>
           </div>
         </div>
         <div class="unit-acc-right">
           <div class="edit-toolbar visible" style="gap:4px">
-            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); editUnit(${unit.id}, '${unit.title.replace(/'/g, "\\'")}', '${(unit.description||'').replace(/'/g, "\\'")}', '${unit.icon_class}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); editUnit(${unit.id}, ${jsStringArg(unit.title)}, ${jsStringArg(unit.description || '')}, ${jsStringArg(unit.icon_class)})"><i class="fa-solid fa-pen"></i></button>
             <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation(); deleteUnit(${unit.id})"><i class="fa-solid fa-trash"></i></button>
           </div>
           <i class="fa-solid fa-chevron-down unit-chevron"></i>
         </div>
-      </button>
+      </div>
       <div class="unit-acc-body">
         <div class="unit-section">
           <div class="unit-section-title">
@@ -309,9 +334,18 @@ async function deleteUnit(id) {
 function showAddResourceModal(unitId) {
   document.getElementById('resourceUnitId').value = unitId;
   document.getElementById('resourceName').value = '';
+  document.getElementById('resourceType').value = 'pdf';
   document.getElementById('resourceFile').value = '';
+  document.getElementById('resourceYoutubeUrl').value = '';
   document.getElementById('resourceMeta').value = '';
+  toggleResourceFields();
   openModal('resource');
+}
+function toggleResourceFields() {
+  const type = document.getElementById('resourceType').value;
+  document.getElementById('resourceFileGroup').style.display = type === 'video' ? 'none' : 'block';
+  document.getElementById('resourceVideoGroup').style.display = type === 'video' ? 'block' : 'none';
+  document.getElementById('resourceFile').accept = type === 'pdf' ? '.pdf' : '.pdf,.doc,.docx';
 }
 async function saveResource() {
   const unitId = document.getElementById('resourceUnitId').value;
@@ -319,12 +353,16 @@ async function saveResource() {
   const type = document.getElementById('resourceType').value;
   const meta = document.getElementById('resourceMeta').value.trim();
   const fileInput = document.getElementById('resourceFile');
+  const youtubeUrl = document.getElementById('resourceYoutubeUrl').value.trim();
   if (!name) return alert('Nombre obligatorio');
+  if (type === 'video' && !youtubeUrl) return alert('Enlace de YouTube obligatorio');
+  if (type === 'pdf' && fileInput.files.length === 0) return alert('Carga un PDF');
   const formData = new FormData();
   formData.append('unit_id', unitId);
   formData.append('name', name);
   formData.append('type', type);
   formData.append('meta', meta);
+  formData.append('youtube_url', youtubeUrl);
   if (fileInput.files.length > 0) formData.append('file', fileInput.files[0]);
   await fetch('api/resources.php', { method: 'POST', body: formData });
   closeModal('resource');
@@ -348,30 +386,73 @@ async function loadResources(unitId) {
     const [ico, cls] = iconMap[r.type] || ['fa-file','res-doc'];
     return `<div class="resource-item">
       <div class="res-icon ${cls}"><i class="fa-solid ${ico}"></i></div>
-      <div class="res-info"><div class="res-name">${r.name}</div><div class="res-meta">${r.meta||''}</div></div>
+      <div class="res-info"><div class="res-name">${r.file_path ? `<a href="${escapeAttr(r.file_path)}" target="_blank">${escapeAttr(r.name)}</a>` : escapeAttr(r.name)}</div><div class="res-meta">${escapeAttr(r.meta||'')}</div></div>
       <i class="fa-solid fa-trash" style="color:var(--red);cursor:pointer" onclick="deleteResource(${r.id})"></i>
     </div>`;
   }).join('');
+}
+
+function activityLabel(type) {
+  return ({ activity:'Actividad', quiz:'Quiz', evaluation:'Evaluación' })[type] || 'Actividad';
+}
+function toggleQuestionEditor() {
+  const type = document.getElementById('activityType').value;
+  const editor = document.getElementById('questionEditor');
+  editor.style.display = type === 'activity' ? 'none' : 'block';
+  if (type !== 'activity' && document.querySelectorAll('#questionsList .question-row').length === 0) addQuestionRow();
+}
+function addQuestionRow(data = {}) {
+  const list = document.getElementById('questionsList');
+  const row = document.createElement('div');
+  row.className = 'question-row';
+  row.style.marginBottom = '12px';
+  row.innerHTML = `
+    <input class="form-input q-question" placeholder="Pregunta" value="${escapeAttr(data.question || '')}" style="margin-bottom:6px">
+    <input class="form-input q-a" placeholder="Respuesta A" value="${escapeAttr(data.option_a || '')}" style="margin-bottom:6px">
+    <input class="form-input q-b" placeholder="Respuesta B" value="${escapeAttr(data.option_b || '')}" style="margin-bottom:6px">
+    <input class="form-input q-c" placeholder="Respuesta C" value="${escapeAttr(data.option_c || '')}" style="margin-bottom:6px">
+    <input class="form-input q-d" placeholder="Respuesta D" value="${escapeAttr(data.option_d || '')}" style="margin-bottom:6px">
+    <select class="form-select q-correct"><option value="a">Correcta: A</option><option value="b">Correcta: B</option><option value="c">Correcta: C</option><option value="d">Correcta: D</option></select>
+    <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="this.closest('.question-row').remove()">Eliminar pregunta</button>
+  `;
+  list.appendChild(row);
+  row.querySelector('.q-correct').value = data.correct_option || 'a';
+}
+function collectQuestions() {
+  return Array.from(document.querySelectorAll('#questionsList .question-row')).map(row => ({
+    question: row.querySelector('.q-question').value.trim(),
+    option_a: row.querySelector('.q-a').value.trim(),
+    option_b: row.querySelector('.q-b').value.trim(),
+    option_c: row.querySelector('.q-c').value.trim(),
+    option_d: row.querySelector('.q-d').value.trim(),
+    correct_option: row.querySelector('.q-correct').value
+  })).filter(q => q.question);
 }
 
 function showAddActivityModal(unitId) {
   document.getElementById('modalActivityTitle').textContent = 'Nueva Actividad';
   document.getElementById('activityUnitId').value = unitId;
   document.getElementById('activityEditId').value = '';
+  document.getElementById('activityType').value = 'activity';
   document.getElementById('activityTitle').value = '';
   document.getElementById('activityDesc').value = '';
   document.getElementById('activityDueDate').value = '';
+  document.getElementById('questionsList').innerHTML = '';
+  toggleQuestionEditor();
   openModal('activity');
 }
 async function saveActivity() {
   const unitId = document.getElementById('activityUnitId').value;
   const editId = document.getElementById('activityEditId').value;
+  const activity_type = document.getElementById('activityType').value;
   const title = document.getElementById('activityTitle').value.trim();
   const description = document.getElementById('activityDesc').value.trim();
   const due_date = document.getElementById('activityDueDate').value;
   if (!title) return alert('Título obligatorio');
+  const questions = activity_type === 'activity' ? [] : collectQuestions();
+  if (activity_type !== 'activity' && questions.length === 0) return alert('Agrega al menos una pregunta');
   const method = editId ? 'PUT' : 'POST';
-  const body = { unit_id: unitId, title, description, due_date };
+  const body = { unit_id: unitId, activity_type, title, description, due_date, questions };
   if (editId) body.id = editId;
   await fetch('api/activities.php', { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
   closeModal('activity');
@@ -384,31 +465,35 @@ async function deleteActivity(id) {
 }
 async function loadActivity(unitId) {
   const container = document.querySelector(`.activity-container[data-unit-id="${unitId}"]`);
-  const res = await fetch(`api/activities.php?unit_id=${unitId}`);
+  const res = await fetch(`api/activities.php?unit_id=${unitId}&include_questions=1`);
   const activities = await res.json();
   if (!activities.length) {
     container.innerHTML = '<p style="font-size:14px;color:var(--gray-500)">Sin actividad asignada.</p>';
     return;
   }
-  const act = activities[0];
-  container.innerHTML = `
+  container.innerHTML = activities.map(act => `
     <div class="activity-box">
+      <div class="activity-due"><i class="fa-solid fa-list-check"></i> ${activityLabel(act.activity_type)}</div>
       <div class="activity-due"><i class="fa-solid fa-clock"></i> ${act.due_date || 'Sin fecha'}</div>
-      <p class="section-text">${act.description}</p>
+      <p class="section-text">${escapeAttr(act.description)}</p>
       <div style="margin-top:8px;display:flex;gap:8px">
-        <button class="btn btn-ghost btn-sm" onclick="editActivity(${act.id}, '${act.title.replace(/'/g, "\\'")}', '${(act.description||'').replace(/'/g, "\\'")}', '${act.due_date||''}')"><i class="fa-solid fa-pen"></i> Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="editActivity(${act.id}, ${jsStringArg(act.title)}, ${jsStringArg(act.description || '')}, ${jsStringArg(act.due_date || '')}, ${jsStringArg(act.activity_type || 'activity')}, ${escapeAttr(JSON.stringify(act.questions || []))})"><i class="fa-solid fa-pen"></i> Editar</button>
         <button class="btn btn-ghost btn-sm" onclick="deleteActivity(${act.id})"><i class="fa-solid fa-trash"></i> Eliminar</button>
         <button class="btn btn-primary btn-sm" onclick="viewSubmissions(${act.id})"><i class="fa-solid fa-eye"></i> Ver entregas</button>
       </div>
     </div>
-  `;
+  `).join('');
 }
-function editActivity(id, title, desc, due) {
+function editActivity(id, title, desc, due, type = 'activity', questions = []) {
   document.getElementById('modalActivityTitle').textContent = 'Editar Actividad';
   document.getElementById('activityEditId').value = id;
+  document.getElementById('activityType').value = type;
   document.getElementById('activityTitle').value = title;
   document.getElementById('activityDesc').value = desc;
   document.getElementById('activityDueDate').value = due;
+  document.getElementById('questionsList').innerHTML = '';
+  questions.forEach(q => addQuestionRow(q));
+  toggleQuestionEditor();
   openModal('activity');
 }
 
@@ -451,15 +536,34 @@ async function loadParticipants() {
     </div>
   `).join('');
 }
+let allStudents = [];
+function renderStudentOptions(students) {
+  document.getElementById('enrollStudentSelect').innerHTML = students.map(s => `<option value="${s.id}">${escapeAttr(s.name)} (${escapeAttr(s.email)})</option>`).join('');
+}
+function filterStudents() {
+  const term = document.getElementById('studentSearch').value.trim().toLowerCase();
+  renderStudentOptions(allStudents.filter(s => s.name.toLowerCase().includes(term) || s.email.toLowerCase().includes(term)));
+}
 async function showEnrollModal() {
   const res = await fetch('api/users.php?role=student');
-  const students = await res.json();
-  const select = document.getElementById('enrollStudent');
-  select.innerHTML = students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  allStudents = await res.json();
+  document.getElementById('studentSearch').value = '';
+  document.getElementById('bulkEnrollEmails').value = '';
+  renderStudentOptions(allStudents);
   openModal('enroll');
 }
-async function enrollStudent() {
-  const studentId = document.getElementById('enrollStudent').value;
+async function enrollStudentToCourse() {
+  const bulkEmails = document.getElementById('bulkEnrollEmails').value.trim();
+  if (bulkEmails) {
+    const res = await fetch('api/enroll.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ course_id: courseId, emails: bulkEmails }) });
+    const data = await res.json();
+    if (!res.ok) return alert(data.error || 'Error al matricular');
+    alert(`Matriculados: ${data.added.length}. Ya estaban: ${data.already.length}. No encontrados: ${data.missing.length}.`);
+    closeModal('enroll');
+    loadParticipants();
+    return;
+  }
+  const studentId = document.getElementById('enrollStudentSelect').value;
   await fetch('api/enroll.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ course_id: courseId, student_id: studentId }) });
   closeModal('enroll');
   loadParticipants();

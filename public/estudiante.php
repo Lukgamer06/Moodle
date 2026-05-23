@@ -61,7 +61,7 @@ $course_name = $course ? $course['name'] : 'Curso';
     <i id="closeForumBtn" class="fa-solid fa-xmark close-icon"></i>
   </div>
   <div class="forum-list" id="forumList"></div>
-  <button class="add-forum-btn" id="addForumBtn" style="display:none"><i class="fa-solid fa-plus"></i> Nuevo Foro</button>
+  <button class="add-forum-btn" id="addForumBtn" onclick="showNewForumModal()"><i class="fa-solid fa-plus"></i> Nuevo Foro</button>
 </aside>
 <div id="overlay" class="overlay"></div>
 
@@ -91,11 +91,52 @@ $course_name = $course ? $course['name'] : 'Curso';
   </div>
 </main>
 
+<!-- Entrega de actividad -->
+<div class="modal-overlay" id="modal-submitActivity">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="submitTitle">Entregar actividad</span><button class="modal-close" onclick="closeModal('submitActivity')"><i class="fa-solid fa-xmark"></i></button></div>
+    <input type="hidden" id="submitActivityId">
+    <input type="hidden" id="submitActivityType">
+    <div class="form-group" id="submitContentGroup"><label class="form-label">Respuesta</label><textarea class="form-textarea" id="submitContent"></textarea></div>
+    <div class="form-group" id="submitFileGroup"><label class="form-label">Archivo opcional</label><input type="file" class="form-input" id="submitFile"></div>
+    <div id="submitQuestions"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('submitActivity')">Cancelar</button>
+      <button class="btn btn-primary" onclick="sendSubmission()">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nuevo Foro -->
+<div class="modal-overlay" id="modal-newForum">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Nuevo Foro</span><button class="modal-close" onclick="closeModal('newForum')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="newForumTitle"></div>
+    <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="newForumDesc"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('newForum')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createForum()">Crear</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/app.js"></script>
 <script>
 const courseId = <?php echo json_encode($course_id); ?>;
 const userId = <?php echo $user['id']; ?>;
 const basePath = 'api/';
+const activityCache = {};
+
+function escapeAttr(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+function activityLabel(type) {
+  return ({ activity:'Actividad', quiz:'Quiz', evaluation:'Evaluación' })[type] || 'Actividad';
+}
 
 // ── CARGAR DATOS DEL CURSO ──
 async function loadCourseIntro() {
@@ -158,44 +199,87 @@ async function loadResources(unitId) {
     return `<div class="resource-item">
       <div class="res-icon ${iconClass.split(' ')[1]}"><i class="fa-solid ${iconClass.split(' ')[0]}"></i></div>
       <div class="res-info"><div class="res-name">${r.name}</div><div class="res-meta">${r.meta || ''}</div></div>
-      <i class="fa-solid ${actionIcon}" style="color:var(--gray-400);font-size:13px"></i>
+      ${r.file_path ? `<a href="${escapeAttr(r.file_path)}" target="_blank"><i class="fa-solid ${actionIcon}" style="color:var(--gray-400);font-size:13px"></i></a>` : `<i class="fa-solid ${actionIcon}" style="color:var(--gray-400);font-size:13px"></i>`}
     </div>`;
   }).join('');
 }
 
 async function loadActivity(unitId) {
   const container = document.querySelector(`.activity-container[data-unit-id="${unitId}"]`);
-  const res = await fetch(`api/activities.php?unit_id=${unitId}`);
+  const res = await fetch(`api/activities.php?unit_id=${unitId}&include_questions=1`);
   const activities = await res.json();
   if (!activities.length) {
     container.innerHTML = '<p style="font-size:14px;color:var(--gray-500)">Sin actividad asignada.</p>';
     return;
   }
-  const act = activities[0]; // Mostramos la primera actividad
-  // Verificar si ya entregó
-  const subRes = await fetch(`api/submissions.php?activity_id=${act.id}`);
-  const submissions = await subRes.json();
-  const submitted = submissions.some(s => s.user_id == userId);
-  container.innerHTML = `
+  const blocks = [];
+  for (const act of activities) {
+    activityCache[act.id] = act;
+    const subRes = await fetch(`api/submissions.php?activity_id=${act.id}`);
+    const submissions = await subRes.json();
+    const submitted = submissions.some(s => s.user_id == userId);
+    blocks.push(`
     <div class="activity-box">
+      <div class="activity-due"><i class="fa-solid fa-list-check"></i> ${activityLabel(act.activity_type)}</div>
       <div class="activity-due"><i class="fa-solid fa-clock"></i> Fecha límite: ${act.due_date || 'Sin fecha'}</div>
-      <p class="section-text">${act.description}</p>
+      <p class="section-text">${escapeAttr(act.description)}</p>
       <br>
       ${submitted ? '<button class="btn btn-primary btn-sm" disabled><i class="fa-solid fa-check"></i> Actividad entregada</button>' :
-      `<button class="btn btn-primary btn-sm" onclick="submitActivity(${act.id})"><i class="fa-solid fa-upload"></i> Entregar actividad</button>`}
+      `<button class="btn btn-primary btn-sm" onclick="openSubmitActivity(${act.id})"><i class="fa-solid fa-upload"></i> Entregar actividad</button>`}
     </div>
-  `;
+    `);
+  }
+  container.innerHTML = blocks.join('');
 }
 
-async function submitActivity(activityId) {
-  const content = prompt('Escribe tu respuesta o contenido de la entrega:');
-  if (content === null) return;
+function openSubmitActivity(activityId) {
+  const activity = activityCache[activityId];
+  document.getElementById('submitActivityId').value = activityId;
+  document.getElementById('submitActivityType').value = activity.activity_type || 'activity';
+  document.getElementById('submitTitle').textContent = `Entregar ${activityLabel(activity.activity_type)}`;
+  document.getElementById('submitContent').value = '';
+  document.getElementById('submitFile').value = '';
+  const isQuiz = ['quiz','evaluation'].includes(activity.activity_type);
+  document.getElementById('submitContentGroup').style.display = isQuiz ? 'none' : 'block';
+  document.getElementById('submitFileGroup').style.display = isQuiz ? 'none' : 'block';
+  document.getElementById('submitQuestions').innerHTML = isQuiz ? (activity.questions || []).map(q => `
+    <div class="form-group" data-question-id="${q.id}">
+      <label class="form-label">${escapeAttr(q.question)}</label>
+      <select class="form-select quiz-answer">
+        <option value="">Selecciona una respuesta</option>
+        <option value="a">A. ${escapeAttr(q.option_a)}</option>
+        <option value="b">B. ${escapeAttr(q.option_b)}</option>
+        <option value="c">C. ${escapeAttr(q.option_c)}</option>
+        <option value="d">D. ${escapeAttr(q.option_d)}</option>
+      </select>
+    </div>
+  `).join('') : '';
+  openModal('submitActivity');
+}
+
+async function sendSubmission() {
+  const activityId = document.getElementById('submitActivityId').value;
+  const activityType = document.getElementById('submitActivityType').value;
   const formData = new FormData();
   formData.append('activity_id', activityId);
-  formData.append('content', content);
-  await fetch('api/submissions.php', { method: 'POST', body: formData });
-  alert('Actividad entregada.');
-  loadUnits(); // Recargar para actualizar estado
+  if (['quiz','evaluation'].includes(activityType)) {
+    const answers = {};
+    document.querySelectorAll('#submitQuestions .form-group').forEach(group => {
+      answers[group.dataset.questionId] = group.querySelector('.quiz-answer').value;
+    });
+    if (Object.values(answers).some(v => !v)) return alert('Responde todas las preguntas');
+    formData.append('answers', JSON.stringify(answers));
+  } else {
+    formData.append('content', document.getElementById('submitContent').value.trim());
+    const file = document.getElementById('submitFile').files[0];
+    if (file) formData.append('file', file);
+  }
+  const res = await fetch('api/submissions.php', { method: 'POST', body: formData });
+  const data = await res.json();
+  if (!res.ok) return alert(data.error || 'No se pudo enviar');
+  closeModal('submitActivity');
+  alert(data.grade === null || data.grade === undefined ? 'Actividad entregada.' : `Entrega enviada. Nota: ${data.grade}`);
+  loadUnits();
 }
 
 // ── PARTICIPANTES ──
@@ -232,6 +316,23 @@ async function loadGrades() {
 }
 
 // ── FOROS ──
+function showNewForumModal() { openModal('newForum'); }
+async function createForum() {
+  const title = document.getElementById('newForumTitle').value.trim();
+  const description = document.getElementById('newForumDesc').value.trim();
+  if (!title) return alert('Título requerido');
+  const res = await fetch('api/forums.php', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ course_id: courseId, title, description })
+  });
+  if (!res.ok) return alert('No se pudo crear el foro');
+  document.getElementById('newForumTitle').value = '';
+  document.getElementById('newForumDesc').value = '';
+  closeModal('newForum');
+  loadForums();
+}
+
 async function loadForums() {
   const res = await fetch(`api/forums.php?course_id=${courseId}`);
   const forums = await res.json();
