@@ -685,3 +685,14 @@ body.course-page .unit-acc-item {
   color: #000000;
   font-size: 13px;
 }
+
+.color-dot.selected {
+  outline: 3px solid #1e3a8a;
+  outline-offset: 3px;
+  transform: scale(1.14);
+  box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.15);
+}
+
+.unit-acc-item.customizable-card .unit-acc-header:hover {
+  filter: brightness(0.97);
+}

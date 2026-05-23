@@ -395,8 +395,13 @@ async function loadUnits() {
   }
   container.innerHTML = units.map(unit => `
     <div class="unit-acc-item customizable-card" style="background:${unit.card_color || '#FFFFFF'}">
-      <div class="unit-acc-header" role="button" tabindex="0" onclick="toggleUnit(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUnit(this)}">
-        <div class="unit-acc-left">
+      <div class="unit-acc-header" 
+          style="background:${unit.card_color || '#FFFFFF'}"
+          role="button" 
+          tabindex="0" 
+          onclick="toggleUnit(this)" 
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUnit(this)}">      
+      <div class="unit-acc-left">
           <div class="unit-icon-sm ${unit.icon_class}"><i class="fa-solid fa-book"></i></div>
           <div>
             <div class="unit-acc-title">${escapeAttr(unit.title)}</div>
@@ -411,7 +416,7 @@ async function loadUnits() {
           <i class="fa-solid fa-chevron-down unit-chevron"></i>
         </div>
       </div>
-      <div class="unit-acc-body">
+      <div class="unit-acc-body" style="background:${unit.card_color || '#FFFFFF'}">
         <div class="unit-section">
           <div class="unit-section-title">
             <span><i class="fa-solid fa-paperclip"></i> Recursos</span>
@@ -439,7 +444,25 @@ let currentUnitCardColor = '#FFFFFF';
 
 function selectUnitColor(color) {
   currentUnitCardColor = color;
-  document.getElementById('unitCardColor').value = color;
+
+  const input = document.getElementById('unitCardColor');
+  if (input) input.value = color;
+
+  document.querySelectorAll('#modal-unit .color-dot').forEach(dot => {
+    dot.classList.remove('selected');
+  });
+
+  const selectedDot = Array.from(document.querySelectorAll('#modal-unit .color-dot'))
+    .find(dot => dot.getAttribute('onclick') && dot.getAttribute('onclick').includes(color));
+
+  if (selectedDot) {
+    selectedDot.classList.add('selected');
+  }
+
+  const modal = document.querySelector('#modal-unit .modal');
+  if (modal) {
+    modal.style.border = `3px solid ${color}`;
+  }
 }
 
 function showAddUnitModal() {
@@ -460,6 +483,15 @@ function showAddUnitModal() {
   const unitColor = document.getElementById('unitCardColor');
   if (unitColor) unitColor.value = '#FFFFFF';
 
+  currentUnitCardColor = '#FFFFFF';
+
+  document.querySelectorAll('#modal-unit .color-dot').forEach(dot => {
+    dot.classList.remove('selected');
+  });
+
+  const modal = document.querySelector('#modal-unit .modal');
+  if (modal) modal.style.border = '';
+
   openModal('unit');
 }
 
@@ -471,6 +503,23 @@ function editUnit(id, title, desc, icon, cardColor = '#FFFFFF') {
   document.getElementById('unitIcon').value = icon;
   document.getElementById('unitCardColor').value = cardColor;
   currentUnitCardColor = cardColor;
+
+  document.querySelectorAll('#modal-unit .color-dot').forEach(dot => {
+    dot.classList.remove('selected');
+  });
+
+  const selectedDot = Array.from(document.querySelectorAll('#modal-unit .color-dot'))
+    .find(dot => dot.getAttribute('onclick') && dot.getAttribute('onclick').includes(cardColor));
+
+  if (selectedDot) {
+    selectedDot.classList.add('selected');
+  }
+
+  const modal = document.querySelector('#modal-unit .modal');
+  if (modal) {
+    modal.style.border = `3px solid ${cardColor}`;
+  }
+
   openModal('unit');
 }
 
