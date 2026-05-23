@@ -33,8 +33,8 @@ if ($course_id) {
     <span class="role-badge-static">Administrador</span>
     <div class="user-dropdown">
       <div class="username">
-        <div class="avatar"><?php echo strtoupper($user['name'][0]); ?></div>
-        <span><?php echo explode(' ', $user['name'])[0]; ?></span>
+        <div class="avatar"><?php echo isset($user['name']) ? strtoupper(mb_substr($user['name'], 0, 1)) : '?'; ?></div>
+        <span><?php echo isset($user['name']) ? explode(' ', $user['name'])[0] : 'Usuario'; ?></span>
         <i class="fa-solid fa-caret-down" style="font-size:12px;opacity:.7"></i>
       </div>
       <div class="dropdown-menu" id="dropdownMenu">
@@ -118,7 +118,7 @@ if ($course_id) {
   </aside>
   <div id="overlay" class="overlay"></div>
 
-  <!-- MODALES (idénticos a los de profesor) -->
+  <!-- MODALES (los mismos de antes) -->
   <!-- Editar Introducción -->
   <div class="modal-overlay" id="modal-editIntro">
     <div class="modal">
@@ -211,8 +211,8 @@ if ($course_id) {
 
 <script src="js/app.js"></script>
 <script>
-const courseId = <?php echo $course_id; ?>;
-const userId = <?php echo $user['id']; ?>;
+const courseId = <?php echo json_encode($course_id !== null ? intval($course_id) : null); ?>;
+const userId = <?php echo json_encode($user['id']); ?>;
 
 // ── INTRODUCCIÓN ──
 function editIntro() {
@@ -235,6 +235,10 @@ async function loadUnits() {
   const res = await fetch(`api/units.php?course_id=${courseId}`);
   const units = await res.json();
   const container = document.getElementById('unitsAccordion');
+  if (units.length === 0) {
+    container.innerHTML = `<p style="text-align:center;color:var(--gray-400);padding:20px;">No hay unidades todavía. <a href="#" onclick="event.preventDefault(); showAddUnitModal()">Crea la primera</a></p>`;
+    return;
+  }
   container.innerHTML = units.map(unit => `
     <div class="unit-acc-item">
       <button class="unit-acc-header" onclick="toggleUnit(this)">
@@ -439,7 +443,7 @@ async function viewSubmissions(activityId) {
       <button class="btn btn-sm btn-primary" onclick="gradeSubmission(${s.id})">Calificar</button></div>
     </div>`;
   });
-  html += '</div><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="closeModal(\'submissions\')">Cerrar</button>';
+  html += '</div><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="this.closest(\'.modal-overlay\').remove()">Cerrar</button>';
   const modal = document.createElement('div');
   modal.className = 'modal-overlay show';
   modal.innerHTML = `<div class="modal"><div class="modal-header"><span class="modal-title">Entregas</span><button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><i class="fa-solid fa-xmark"></i></button></div>${html}</div>`;
@@ -486,7 +490,7 @@ async function loadGrades() {
   const studentsMap = {};
   const activitiesSet = new Set();
   data.forEach(row => {
-    if (!studentsMap[row.student_id]) studentsMap[row.student_id] = { name: row.student_name, grades: {} };
+    if (!studentsMap[row.student_id]) studentsMap[row.student_id] = { id: row.student_id, name: row.student_name, grades: {} };
     if (row.activity_id) {
       studentsMap[row.student_id].grades[row.activity_id] = row.grade;
       activitiesSet.add(row.activity_id);
@@ -504,11 +508,11 @@ async function loadGrades() {
     html += `<th>${act ? act.actividad : ''}</th>`;
   });
   html += '</tr></thead><tbody>';
-  Object.values(studentsMap).forEach(st => {
+  Object.entries(studentsMap).forEach(([sId, st]) => {
     html += `<tr><td>${st.name}</td>`;
     activitiesArr.forEach(aId => {
       const grade = st.grades[aId] || '';
-      html += `<td><input class="grade-input" type="number" min="0" max="10" step="0.1" value="${grade}" data-student="${st.id}" data-activity="${aId}"></td>`;
+      html += `<td><input class="grade-input" type="number" min="0" max="10" step="0.1" value="${grade}" data-student="${sId}" data-activity="${aId}"></td>`;
     });
     html += '</tr>';
   });
@@ -587,7 +591,7 @@ loadForums();
 </script>
 
 <?php else: ?>
-<!-- ========== PANEL GENERAL (cuando no hay ?course_id) ========== -->
+<!-- ========== PANEL GENERAL ========== -->
 <main class="page-wrap">
   <div class="admin-notice visible"><i class="fa-solid fa-shield-halved"></i> Panel de Administración</div>
   
@@ -621,7 +625,6 @@ loadForums();
 
 <script src="js/app.js"></script>
 <script>
-// Cargar todos los cursos
 async function loadAllCourses() {
   const res = await fetch('api/courses.php');
   const courses = await res.json();
@@ -636,7 +639,6 @@ async function loadAllCourses() {
   `).join('');
 }
 
-// Cargar usuarios
 async function loadUsers() {
   const res = await fetch('api/users.php');
   const users = await res.json();

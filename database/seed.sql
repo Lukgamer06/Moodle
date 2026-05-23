@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 -- Usuarios de ejemplo (contraseña: password123)
 INSERT INTO users (name, email, password_hash, role) VALUES
 ('Admin Vera', 'admin@minimoodle.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),

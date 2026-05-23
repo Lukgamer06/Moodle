@@ -5,7 +5,6 @@ $user = $_SESSION['user'];
 $course_id = $_GET['course_id'] ?? null;
 if (!$course_id) { header('Location: dashboard.php'); exit; }
 require_once 'api/config.php';
-// Verificar que el profesor es dueño del curso
 $stmt = $pdo->prepare("SELECT * FROM courses WHERE id = ? AND teacher_id = ?");
 $stmt->execute([$course_id, $user['id']]);
 $course = $stmt->fetch();
@@ -24,7 +23,6 @@ $course_name = $course['name'];
 </head>
 <body>
 
-<!-- TOPBAR -->
 <header class="topbar">
   <div class="topbar-left">
     <div class="logo-mark">M</div>
@@ -34,21 +32,20 @@ $course_name = $course['name'];
     <span class="role-badge-static">Profesor</span>
     <div class="user-dropdown">
       <div class="username">
-        <div class="avatar"><?php echo strtoupper($user['name'][0]); ?></div>
-        <span><?php echo explode(' ', $user['name'])[0]; ?></span>
+        <div class="avatar"><?php echo isset($user['name']) ? strtoupper(mb_substr($user['name'], 0, 1)) : '?'; ?></div>
+        <span><?php echo isset($user['name']) ? explode(' ', $user['name'])[0] : 'Usuario'; ?></span>
         <i class="fa-solid fa-caret-down" style="font-size:12px;opacity:.7"></i>
       </div>
       <div class="dropdown-menu" id="dropdownMenu">
-          <button onclick="window.location.href='dashboard.php'"><i class="fa-solid fa-home"></i> Dashboard</button>
-          <button onclick="window.location.href='perfil.php'"><i class="fa-solid fa-user"></i> Mi Perfil</button>
-          <button onclick="logout()" style="color:var(--red)"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
+        <button onclick="window.location.href='dashboard.php'"><i class="fa-solid fa-home"></i> Dashboard</button>
+        <button onclick="window.location.href='perfil.php'"><i class="fa-solid fa-user"></i> Mi Perfil</button>
+        <button onclick="logout()" style="color:var(--red)"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</button>
       </div>
     </div>
     <i id="openForumBtn" class="fa-solid fa-comments forum-icon" title="Foros"></i>
   </div>
 </header>
 
-<!-- NAV TABS -->
 <nav class="nav-area">
   <button class="nav-btn active" onclick="showScreen('course')"><i class="fa-solid fa-book"></i> Curso</button>
   <button class="nav-btn" onclick="showScreen('participants')"><i class="fa-solid fa-users"></i> Participantes</button>
@@ -66,20 +63,17 @@ $course_name = $course['name'];
 </aside>
 <div id="overlay" class="overlay"></div>
 
-<!-- MAIN -->
 <main class="page-wrap">
   <div id="screen-course" class="screen active">
-    <!-- Presentación -->
-    <div class="card" id="courseIntro">
+    <div class="card">
       <div class="card-header">
         <h2 class="section-title">Presentación del Curso</h2>
         <div class="edit-toolbar visible">
           <button class="btn btn-ghost btn-sm" onclick="editIntro()"><i class="fa-solid fa-pen"></i> Editar</button>
         </div>
       </div>
-      <p class="section-text" id="introText"><?php echo htmlspecialchars($course['description'] ?? 'Sin descripción'); ?></p>
+      <p class="section-text" id="introText"><?php echo htmlspecialchars($course['description'] ?? ''); ?></p>
     </div>
-    <!-- Unidades -->
     <div class="card">
       <div class="card-header">
         <h2 class="section-title">Unidades del Curso</h2>
@@ -91,7 +85,6 @@ $course_name = $course['name'];
     </div>
   </div>
 
-  <!-- Participantes -->
   <div id="screen-participants" class="screen">
     <div class="card">
       <div class="card-header">
@@ -104,7 +97,6 @@ $course_name = $course['name'];
     </div>
   </div>
 
-  <!-- Calificaciones -->
   <div id="screen-grades" class="screen">
     <div class="card">
       <div class="card-header">
@@ -124,14 +116,8 @@ $course_name = $course['name'];
 <!-- Editar Introducción -->
 <div class="modal-overlay" id="modal-editIntro">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Editar Presentación</span>
-      <button class="modal-close" onclick="closeModal('editIntro')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Descripción</label>
-      <textarea class="form-textarea" id="editIntroDesc"></textarea>
-    </div>
+    <div class="modal-header"><span class="modal-title">Editar Presentación</span><button class="modal-close" onclick="closeModal('editIntro')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="editIntroDesc"></textarea></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('editIntro')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveIntro()">Guardar</button>
@@ -142,27 +128,13 @@ $course_name = $course['name'];
 <!-- Agregar/Editar Unidad -->
 <div class="modal-overlay" id="modal-unit">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="modalUnitTitle">Nueva Unidad</span>
-      <button class="modal-close" onclick="closeModal('unit')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
+    <div class="modal-header"><span class="modal-title" id="modalUnitTitle">Nueva Unidad</span><button class="modal-close" onclick="closeModal('unit')"><i class="fa-solid fa-xmark"></i></button></div>
     <input type="hidden" id="unitEditId">
-    <div class="form-group">
-      <label class="form-label">Título</label>
-      <input class="form-input" id="unitTitle">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Descripción breve</label>
-      <input class="form-input" id="unitDesc">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Ícono</label>
+    <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="unitTitle"></div>
+    <div class="form-group"><label class="form-label">Descripción breve</label><input class="form-input" id="unitDesc"></div>
+    <div class="form-group"><label class="form-label">Ícono</label>
       <select class="form-select" id="unitIcon">
-        <option value="hw">🔧 Hardware</option>
-        <option value="net">🌐 Redes</option>
-        <option value="srv">🖥️ Servidores</option>
-        <option value="virt">☁️ Virtualización</option>
-        <option value="gen">📘 General</option>
+        <option value="hw">🔧 Hardware</option><option value="net">🌐 Redes</option><option value="srv">🖥️ Servidores</option><option value="virt">☁️ Virtualización</option><option value="gen">📘 General</option>
       </select>
     </div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
@@ -175,31 +147,12 @@ $course_name = $course['name'];
 <!-- Agregar Recurso -->
 <div class="modal-overlay" id="modal-resource">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Nuevo Recurso</span>
-      <button class="modal-close" onclick="closeModal('resource')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
+    <div class="modal-header"><span class="modal-title">Nuevo Recurso</span><button class="modal-close" onclick="closeModal('resource')"><i class="fa-solid fa-xmark"></i></button></div>
     <input type="hidden" id="resourceUnitId">
-    <div class="form-group">
-      <label class="form-label">Nombre</label>
-      <input class="form-input" id="resourceName">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Tipo</label>
-      <select class="form-select" id="resourceType">
-        <option value="pdf">PDF</option>
-        <option value="video">Video</option>
-        <option value="doc">Documento</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Archivo (opcional)</label>
-      <input type="file" class="form-input" id="resourceFile">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Meta (tamaño, duración...)</label>
-      <input class="form-input" id="resourceMeta" placeholder="Ej: 2.4 MB / 22 min">
-    </div>
+    <div class="form-group"><label class="form-label">Nombre</label><input class="form-input" id="resourceName"></div>
+    <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="resourceType"><option value="pdf">PDF</option><option value="video">Video</option><option value="doc">Documento</option></select></div>
+    <div class="form-group"><label class="form-label">Archivo (opcional)</label><input type="file" class="form-input" id="resourceFile"></div>
+    <div class="form-group"><label class="form-label">Meta (tamaño, duración...)</label><input class="form-input" id="resourceMeta" placeholder="Ej: 2.4 MB / 22 min"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('resource')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveResource()">Guardar</button>
@@ -210,24 +163,12 @@ $course_name = $course['name'];
 <!-- Agregar/Editar Actividad -->
 <div class="modal-overlay" id="modal-activity">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title" id="modalActivityTitle">Nueva Actividad</span>
-      <button class="modal-close" onclick="closeModal('activity')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
+    <div class="modal-header"><span class="modal-title" id="modalActivityTitle">Nueva Actividad</span><button class="modal-close" onclick="closeModal('activity')"><i class="fa-solid fa-xmark"></i></button></div>
     <input type="hidden" id="activityUnitId">
     <input type="hidden" id="activityEditId">
-    <div class="form-group">
-      <label class="form-label">Título</label>
-      <input class="form-input" id="activityTitle">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Descripción</label>
-      <textarea class="form-textarea" id="activityDesc"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Fecha límite</label>
-      <input type="date" class="form-input" id="activityDueDate">
-    </div>
+    <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="activityTitle"></div>
+    <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="activityDesc"></textarea></div>
+    <div class="form-group"><label class="form-label">Fecha límite</label><input type="date" class="form-input" id="activityDueDate"></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('activity')">Cancelar</button>
       <button class="btn btn-primary" onclick="saveActivity()">Guardar</button>
@@ -238,14 +179,8 @@ $course_name = $course['name'];
 <!-- Matricular estudiante -->
 <div class="modal-overlay" id="modal-enroll">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Matricular Estudiante</span>
-      <button class="modal-close" onclick="closeModal('enroll')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Estudiante</label>
-      <select class="form-select" id="enrollStudent"></select>
-    </div>
+    <div class="modal-header"><span class="modal-title">Matricular Estudiante</span><button class="modal-close" onclick="closeModal('enroll')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="form-group"><label class="form-label">Estudiante</label><select class="form-select" id="enrollStudent"></select></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('enroll')">Cancelar</button>
       <button class="btn btn-primary" onclick="enrollStudent()">Matricular</button>
@@ -256,18 +191,9 @@ $course_name = $course['name'];
 <!-- Nuevo Foro -->
 <div class="modal-overlay" id="modal-newForum">
   <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">Nuevo Foro</span>
-      <button class="modal-close" onclick="closeModal('newForum')"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Título</label>
-      <input class="form-input" id="newForumTitle">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Descripción</label>
-      <textarea class="form-textarea" id="newForumDesc"></textarea>
-    </div>
+    <div class="modal-header"><span class="modal-title">Nuevo Foro</span><button class="modal-close" onclick="closeModal('newForum')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="form-group"><label class="form-label">Título</label><input class="form-input" id="newForumTitle"></div>
+    <div class="form-group"><label class="form-label">Descripción</label><textarea class="form-textarea" id="newForumDesc"></textarea></div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('newForum')">Cancelar</button>
       <button class="btn btn-primary" onclick="createForum()">Crear</button>
@@ -280,14 +206,13 @@ $course_name = $course['name'];
 const courseId = <?php echo json_encode($course_id); ?>;
 const userId = <?php echo $user['id']; ?>;
 
-// ── INTRODUCCIÓN ──
 function editIntro() {
   document.getElementById('editIntroDesc').value = document.getElementById('introText').textContent;
   openModal('editIntro');
 }
 async function saveIntro() {
   const desc = document.getElementById('editIntroDesc').value;
-  await fetch(`api/courses.php`, {
+  await fetch('api/courses.php', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({id: courseId, description: desc})
@@ -296,11 +221,14 @@ async function saveIntro() {
   closeModal('editIntro');
 }
 
-// ── UNIDADES ──
 async function loadUnits() {
   const res = await fetch(`api/units.php?course_id=${courseId}`);
   const units = await res.json();
   const container = document.getElementById('unitsAccordion');
+  if (units.length === 0) {
+    container.innerHTML = `<p style="text-align:center;color:var(--gray-400);padding:20px;">No hay unidades. <a href="#" onclick="event.preventDefault(); showAddUnitModal()">Crea la primera</a></p>`;
+    return;
+  }
   container.innerHTML = units.map(unit => `
     <div class="unit-acc-item">
       <button class="unit-acc-header" onclick="toggleUnit(this)">
@@ -368,15 +296,9 @@ async function saveUnit() {
   const method = id ? 'PUT' : 'POST';
   const body = { course_id: courseId, title, description, icon_class, order_index: 0 };
   if (id) body.id = id;
-  const res = await fetch('api/units.php', {
-    method,
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(body)
-  });
-  if (res.ok) {
-    closeModal('unit');
-    loadUnits();
-  }
+  await fetch('api/units.php', { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+  closeModal('unit');
+  loadUnits();
 }
 async function deleteUnit(id) {
   if (!confirm('¿Eliminar esta unidad y todo su contenido?')) return;
@@ -384,7 +306,6 @@ async function deleteUnit(id) {
   loadUnits();
 }
 
-// ── RECURSOS ──
 function showAddResourceModal(unitId) {
   document.getElementById('resourceUnitId').value = unitId;
   document.getElementById('resourceName').value = '';
@@ -407,7 +328,7 @@ async function saveResource() {
   if (fileInput.files.length > 0) formData.append('file', fileInput.files[0]);
   await fetch('api/resources.php', { method: 'POST', body: formData });
   closeModal('resource');
-  loadUnits(); // recargar todo (o solo ese recurso)
+  loadUnits();
 }
 async function deleteResource(id) {
   if (!confirm('¿Eliminar recurso?')) return;
@@ -433,7 +354,6 @@ async function loadResources(unitId) {
   }).join('');
 }
 
-// ── ACTIVIDADES ──
 function showAddActivityModal(unitId) {
   document.getElementById('modalActivityTitle').textContent = 'Nueva Actividad';
   document.getElementById('activityUnitId').value = unitId;
@@ -453,11 +373,7 @@ async function saveActivity() {
   const method = editId ? 'PUT' : 'POST';
   const body = { unit_id: unitId, title, description, due_date };
   if (editId) body.id = editId;
-  await fetch('api/activities.php', {
-    method,
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(body)
-  });
+  await fetch('api/activities.php', { method, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
   closeModal('activity');
   loadUnits();
 }
@@ -490,14 +406,12 @@ async function loadActivity(unitId) {
 function editActivity(id, title, desc, due) {
   document.getElementById('modalActivityTitle').textContent = 'Editar Actividad';
   document.getElementById('activityEditId').value = id;
-  document.getElementById('activityUnitId').value = ''; // no necesario
   document.getElementById('activityTitle').value = title;
   document.getElementById('activityDesc').value = desc;
   document.getElementById('activityDueDate').value = due;
   openModal('activity');
 }
 
-// ── ENTREGAS ──
 async function viewSubmissions(activityId) {
   const res = await fetch(`api/submissions.php?activity_id=${activityId}`);
   const subs = await res.json();
@@ -512,7 +426,7 @@ async function viewSubmissions(activityId) {
       <button class="btn btn-sm btn-primary" onclick="gradeSubmission(${s.id})">Calificar</button></div>
     </div>`;
   });
-  html += '</div><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="closeModal('submissions')">Cerrar</button>';
+  html += '</div><button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="this.closest(\'.modal-overlay\').remove()">Cerrar</button>';
   const modal = document.createElement('div');
   modal.className = 'modal-overlay show';
   modal.innerHTML = `<div class="modal"><div class="modal-header"><span class="modal-title">Entregas</span><button class="modal-close" onclick="this.closest('.modal-overlay').remove()"><i class="fa-solid fa-xmark"></i></button></div>${html}</div>`;
@@ -523,15 +437,10 @@ async function gradeSubmission(submissionId) {
   const input = document.getElementById('grade-' + submissionId);
   const grade = parseFloat(input.value);
   if (isNaN(grade) || grade < 0 || grade > 10) return alert('Nota inválida');
-  await fetch('api/grades.php', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ submission_id: submissionId, grade })
-  });
+  await fetch('api/grades.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ submission_id: submissionId, grade }) });
   alert('Nota guardada');
 }
 
-// ── PARTICIPANTES ──
 async function loadParticipants() {
   const res = await fetch(`api/enroll.php?course_id=${courseId}`);
   const participants = await res.json();
@@ -551,25 +460,18 @@ async function showEnrollModal() {
 }
 async function enrollStudent() {
   const studentId = document.getElementById('enrollStudent').value;
-  await fetch('api/enroll.php', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ course_id: courseId, student_id: studentId })
-  });
+  await fetch('api/enroll.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ course_id: courseId, student_id: studentId }) });
   closeModal('enroll');
   loadParticipants();
 }
 
-// ── CALIFICACIONES ──
 async function loadGrades() {
   const res = await fetch(`api/grades.php?course_id=${courseId}`);
   const data = await res.json();
-  // data es un array de {student_id, student_name, activity_id, actividad, submission_id, grade}
-  // Lo organizamos como tabla dinámica
   const studentsMap = {};
   const activitiesSet = new Set();
   data.forEach(row => {
-    if (!studentsMap[row.student_id]) studentsMap[row.student_id] = { name: row.student_name, grades: {} };
+    if (!studentsMap[row.student_id]) studentsMap[row.student_id] = { id: row.student_id, name: row.student_name, grades: {} };
     if (row.activity_id) {
       studentsMap[row.student_id].grades[row.activity_id] = row.grade;
       activitiesSet.add(row.activity_id);
@@ -587,11 +489,11 @@ async function loadGrades() {
     html += `<th>${act ? act.actividad : ''}</th>`;
   });
   html += '</tr></thead><tbody>';
-  Object.values(studentsMap).forEach(st => {
+  Object.entries(studentsMap).forEach(([sId, st]) => {
     html += `<tr><td>${st.name}</td>`;
     activitiesArr.forEach(aId => {
       const grade = st.grades[aId] || '';
-      html += `<td><input class="grade-input" type="number" min="0" max="10" step="0.1" value="${grade}" data-student="${st.id}" data-activity="${aId}"></td>`;
+      html += `<td><input class="grade-input" type="number" min="0" max="10" step="0.1" value="${grade}" data-student="${sId}" data-activity="${aId}"></td>`;
     });
     html += '</tr>';
   });
@@ -599,39 +501,27 @@ async function loadGrades() {
   table.innerHTML = html;
 }
 function saveGrades() {
-  // Recorremos inputs y guardamos si cambian
   document.querySelectorAll('.grade-input').forEach(async input => {
     const studentId = input.dataset.student;
     const activityId = input.dataset.activity;
     const grade = input.value;
     if (grade === '') return;
-    // Necesitamos el submission_id, podemos obtenerlo desde la tabla de datos cargada
-    // Solución: recargamos datos y buscamos submission
     const res = await fetch(`api/grades.php?course_id=${courseId}`);
     const data = await res.json();
     const sub = data.find(d => d.student_id == studentId && d.activity_id == activityId);
     if (sub && sub.submission_id) {
-      await fetch('api/grades.php', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ submission_id: sub.submission_id, grade: parseFloat(grade) })
-      });
+      await fetch('api/grades.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ submission_id: sub.submission_id, grade: parseFloat(grade) }) });
     }
   });
   alert('Calificaciones guardadas.');
 }
 
-// ── FOROS ──
 function showNewForumModal() { openModal('newForum'); }
 async function createForum() {
   const title = document.getElementById('newForumTitle').value.trim();
   const description = document.getElementById('newForumDesc').value.trim();
   if (!title) return alert('Título requerido');
-  await fetch('api/forums.php', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ course_id: courseId, title, description })
-  });
+  await fetch('api/forums.php', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ course_id: courseId, title, description }) });
   closeModal('newForum');
   loadForums();
 }
@@ -675,7 +565,6 @@ async function loadForumMessages(forumId) {
   `).join('');
 }
 
-// Iniciar
 loadUnits();
 loadForums();
 </script>

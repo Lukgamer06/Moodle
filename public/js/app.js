@@ -1,5 +1,3 @@
-// public/js/app.js
-
 // ── NAVEGACIÓN ──
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -65,7 +63,6 @@ function setupForumDrawer(openBtnId, closeBtnId, drawerId, overlayId) {
   if (closeBtn) closeBtn.onclick = () => { drawer.classList.remove('open'); overlay.classList.remove('show'); };
   if (overlay) overlay.onclick = () => { drawer.classList.remove('open'); overlay.classList.remove('show'); };
 }
-
 function toggleForum(btn) {
   const body = btn.nextElementSibling;
   const isOpen = body.style.display === 'block';
@@ -76,7 +73,6 @@ function toggleForum(btn) {
     btn.classList.add('open');
   }
 }
-
 async function sendMsg(btn) {
   const ta = btn.previousElementSibling;
   const content = ta.value.trim();
@@ -89,7 +85,6 @@ async function sendMsg(btn) {
     body: JSON.stringify({ forum_id: forumId, content })
   });
   ta.value = '';
-  // Recargar mensajes
   if (typeof loadForumMessages === 'function') loadForumMessages(forumId, btn.closest('.forum-body'));
 }
 
@@ -99,12 +94,6 @@ function logout() {
     window.location.href = 'login.html';
   });
 }
-
-// Inicializar al cargar
-document.addEventListener('DOMContentLoaded', () => {
-  setupUserDropdown();
-  setupForumDrawer('openForumBtn', 'closeForumBtn', 'forumDrawer', 'overlay');
-});
 
 // ── PERFIL ──
 function startEdit() {
@@ -124,10 +113,7 @@ function cancelEdit() {
 async function saveProfile() {
   const name = document.getElementById('inp-name').value.trim();
   const email = document.getElementById('inp-email').value.trim();
-  if (!name) {
-    showToast('El nombre no puede estar vacío');
-    return;
-  }
+  if (!name) { showToast('El nombre no puede estar vacío'); return; }
   const res = await fetch('api/users.php', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -135,7 +121,6 @@ async function saveProfile() {
   });
   if (res.ok) {
     const data = await res.json();
-    // Actualizar vista
     document.getElementById('view-name').textContent = name;
     document.getElementById('view-email').textContent = email;
     document.getElementById('displayName').textContent = name;
@@ -156,8 +141,6 @@ async function changePwd() {
   const cf = document.getElementById('pwd-confirm').value;
   if (!cur || !nw || !cf) { showToast('Completa todos los campos'); return; }
   if (nw !== cf) { showToast('Las contraseñas no coinciden'); return; }
-  // Primero verificar contraseña actual (hacer un login rápido o un endpoint de verificación)
-  // Podemos enviar la actual y la nueva al servidor para que verifique
   const res = await fetch('api/users.php', {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
@@ -180,3 +163,9 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// Inicializar al cargar
+document.addEventListener('DOMContentLoaded', () => {
+  setupUserDropdown();
+  setupForumDrawer('openForumBtn', 'closeForumBtn', 'forumDrawer', 'overlay');
+});

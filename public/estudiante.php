@@ -33,8 +33,8 @@ $course_name = $course ? $course['name'] : 'Curso';
     <span class="role-badge-static">Estudiante</span>
     <div class="user-dropdown">
       <div class="username">
-        <div class="avatar"><?php echo strtoupper($user['name'][0]); ?></div>
-        <span><?php echo explode(' ', $user['name'])[0]; ?></span>
+        <div class="avatar"><?php echo isset($user['name']) ? strtoupper(mb_substr($user['name'], 0, 1)) : '?'; ?></div>
+        <span><?php echo isset($user['name']) ? explode(' ', $user['name'])[0] : 'Usuario'; ?></span>
         <i class="fa-solid fa-caret-down" style="font-size:12px;opacity:.7"></i>
       </div>
       <div class="dropdown-menu" id="dropdownMenu">

@@ -22,12 +22,22 @@ if ($method === 'POST' && $user['role'] === 'student') {
     echo json_encode(['success'=>true]);
     exit;
 }
-if ($method === 'GET' && in_array($user['role'], ['teacher','admin'])) {
+if ($method === 'GET') {
     $activity_id = $_GET['activity_id'] ?? null;
     if (!$activity_id) { http_response_code(400); exit; }
-    $stmt = $pdo->prepare("SELECT s.*, u.name AS student_name FROM submissions s JOIN users u ON s.user_id = u.id WHERE s.activity_id = ?");
-    $stmt->execute([$activity_id]);
-    echo json_encode($stmt->fetchAll());
+    if (in_array($user['role'], ['teacher','admin'])) {
+        $stmt = $pdo->prepare("SELECT s.*, u.name AS student_name FROM submissions s JOIN users u ON s.user_id = u.id WHERE s.activity_id = ?");
+        $stmt->execute([$activity_id]);
+        echo json_encode($stmt->fetchAll());
+        exit;
+    }
+    if ($user['role'] === 'student') {
+        $stmt = $pdo->prepare("SELECT s.*, u.name AS student_name FROM submissions s JOIN users u ON s.user_id = u.id WHERE s.activity_id = ? AND s.user_id = ?");
+        $stmt->execute([$activity_id, $user['id']]);
+        echo json_encode($stmt->fetchAll());
+        exit;
+    }
+    http_response_code(403);
     exit;
 }
 http_response_code(405);

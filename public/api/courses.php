@@ -58,4 +58,23 @@ if ($method === 'POST' && $user['role'] === 'admin') {
     exit;
 }
 
+// PUT: actualizar curso (admin o profesor del curso)
+if ($method === 'PUT' && in_array($user['role'], ['admin','teacher'])) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = $data['id'] ?? null;
+    if (!$id) { http_response_code(400); echo json_encode(['error'=>'ID requerido']); exit; }
+    $stmt = $pdo->prepare("SELECT teacher_id, name, description FROM courses WHERE id=?");
+    $stmt->execute([$id]);
+    $course = $stmt->fetch();
+    if (!$course) { http_response_code(404); echo json_encode(['error'=>'Curso no encontrado']); exit; }
+    if ($user['role'] === 'teacher' && $course['teacher_id'] != $user['id']) { http_response_code(403); echo json_encode(['error'=>'No autorizado']); exit; }
+    $name = trim($data['name'] ?? $course['name']);
+    $desc = trim($data['description'] ?? $course['description']);
+    $teacher_id = $data['teacher_id'] ?? $course['teacher_id'];
+    $stmt = $pdo->prepare("UPDATE courses SET name=?, description=?, teacher_id=? WHERE id=?");
+    $stmt->execute([$name, $desc, $teacher_id, $id]);
+    echo json_encode(['success'=>true]);
+    exit;
+}
+
 http_response_code(405);

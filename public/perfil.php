@@ -46,8 +46,8 @@ $progreso = $totalUnidades > 0 ? round(($unidadesCompletadas / $totalUnidades) *
     </button>
   </div>
   <div class="topbar-right">
-    <div class="avatar" id="topAvatar"><?php echo strtoupper($user['name'][0]); ?></div>
-    <span class="top-name" id="topName"><?php echo explode(' ', $user['name'])[0]; ?></span>
+    <div class="avatar"><?php echo isset($user['name']) ? strtoupper(mb_substr($user['name'], 0, 1)) : '?'; ?></div>
+    <span><?php echo isset($user['name']) ? explode(' ', $user['name'])[0] : 'Usuario'; ?></span>
   </div>
 </header>
 
