@@ -296,12 +296,31 @@ async function sendSubmission() {
 async function loadParticipants() {
   const res = await fetch(`api/enroll.php?course_id=${courseId}`);
   const participants = await res.json();
-  document.getElementById('participantsList').innerHTML = participants.map(p => `
-    <div class="participant-row">
-      <span class="p-name">${p.name}</span>
-      <span class="p-role-badge role-estudiante">Estudiante</span>
+
+  document.getElementById('participantsList').innerHTML = `
+    <div class="participants-table-wrapper">
+      <table class="participants-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>NRC</th>
+            <th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${participants.map(p => `
+            <tr>
+              <td>${escapeAttr(p.name)}</td>
+              <td class="col-nrc">${escapeAttr(p.nrc || 'Sin NRC')}</td>
+              <td class="col-role">
+                <span class="p-role-badge role-estudiante">Estudiante</span>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
     </div>
-  `).join('');
+  `;
 }
 
 // ── CALIFICACIONES ──

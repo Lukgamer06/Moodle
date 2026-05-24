@@ -1,8 +1,33 @@
 <?php
 session_start();
-if (!isset($_SESSION['user'])) { header('Location: login.html'); exit; }
-$user = $_SESSION['user'];
+if (!isset($_SESSION['user'])) { 
+    header('Location: login.html'); 
+    exit; 
+}
+
 require_once 'api/config.php';
+
+/*
+  Tomamos el id desde la sesión,
+  pero cargamos los datos completos desde MySQL,
+  incluyendo el nuevo campo NRC.
+*/
+$userId = $_SESSION['user']['id'];
+
+$stmt = $pdo->prepare("SELECT id, name, email, nrc, role FROM users WHERE id = ?");
+$stmt->execute([$userId]);
+$user = $stmt->fetch();
+
+if (!$user) {
+    session_destroy();
+    header('Location: login.html');
+    exit;
+}
+
+/*
+  Actualizamos la sesión para que también tenga el NRC.
+*/
+$_SESSION['user'] = $user;
 
 // Obtener estadísticas reales
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM forum_messages WHERE user_id = ?");
@@ -61,7 +86,8 @@ $progreso = $totalUnidades > 0 ? round(($unidadesCompletadas / $totalUnidades) *
         <div class="profile-name" id="displayName"><?php echo htmlspecialchars($user['name']); ?></div>
         <div class="profile-sub">
           <span class="role-pill" id="displayRole"><?php echo ucfirst($user['role']); ?></span>
-          <span>Mini Moodle</span>
+          <span><?php echo htmlspecialchars($user['nrc'] ?? 'Sin NRC'); ?></span>
+          <span>Moodle</span>
         </div>
       </div>
     </div>
@@ -78,10 +104,19 @@ $progreso = $totalUnidades > 0 ? round(($unidadesCompletadas / $totalUnidades) *
         <span class="field-label">Nombre completo</span>
         <div class="field-value" id="view-name"><?php echo htmlspecialchars($user['name']); ?></div>
       </div>
+      #AAAAAAAAAAA
       <div class="field-group">
         <span class="field-label">Correo electrónico</span>
         <div class="field-value" id="view-email"><?php echo htmlspecialchars($user['email']); ?></div>
       </div>
+
+      <div class="field-group">
+        <span class="field-label">NRC</span>
+        <div class="field-value" id="view-nrc">
+          <?php echo htmlspecialchars($user['nrc'] ?? 'Sin NRC'); ?>
+        </div>
+      </div>
+
       <div class="field-group">
         <span class="field-label">Rol</span>
         <div class="field-value" id="view-role"><?php echo ucfirst($user['role']); ?></div>

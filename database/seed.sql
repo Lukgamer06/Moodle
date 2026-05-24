@@ -5,14 +5,15 @@ SET NAMES utf8mb4;
 -- Contraseña para todos: password
 -- ============================================================
 
-INSERT INTO users (name, email, password_hash, role) VALUES
-('Admin Vera', 'admin@minimoodle.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
-('Prof. Herrera', 'profesor@minimoodle.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'teacher'),
-('Lucas Martínez', 'lucas@minimoodle.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-('Ana Gómez', 'ana@minimoodle.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
-('Pedro Ruiz', 'pedro@minimoodle.local', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student')
+INSERT INTO users (name, email, nrc, password_hash, role) VALUES
+('Admin Vera', 'admin@minimoodle.local', 'U00010000', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin'),
+('Prof. Herrera', 'profesor@minimoodle.local', 'U00010001', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'teacher'),
+('Lucas Martínez', 'lucas@minimoodle.local', 'U00010002', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
+('Ana Gómez', 'ana@minimoodle.local', 'U00010003', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student'),
+('Pedro Ruiz', 'pedro@minimoodle.local', 'U00010004', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'student')
 ON DUPLICATE KEY UPDATE
   name = VALUES(name),
+  nrc = VALUES(nrc),
   role = VALUES(role);
 
 -- ============================================================
