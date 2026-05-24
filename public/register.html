@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro - Mini Moodle</title>
+    <title>Registro - Moodle</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
     <style>
@@ -32,13 +32,24 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family:'DM Sans',sans-serif;
-            background: var(--gray-100);
             color: var(--gray-900);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+
+            background:
+                linear-gradient(
+                    rgba(232, 227, 255, 0.78),
+                    rgba(232, 227, 255, 0.78)
+                ),
+                url("assets/auth-bg.png");
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
         .register-container {
             width: 100%;
@@ -67,12 +78,13 @@
             color: var(--gray-900);
         }
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.88);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
             padding: 32px 28px;
-            border: 1px solid var(--gray-200);
+            border: 1px solid rgba(255, 255, 255, 0.65);
             animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         @keyframes fadeIn {
             from { opacity:0; transform:translateY(8px); }
@@ -162,7 +174,7 @@
 <div class="register-container">
     <div class="logo-area">
         <div class="logo-mark">M</div>
-        <div class="app-name">Mini Moodle</div>
+        <div class="app-name">Moodle</div>
     </div>
     <div class="card">
         <h2 class="card-title">Crear Cuenta</h2>

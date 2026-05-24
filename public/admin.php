@@ -285,7 +285,7 @@ if ($course_id) {
       </div>
       <div class="form-group"><label class="form-label">Ícono</label>
         <select class="form-select" id="unitIcon">
-          <option value="hw">🔧 Hardware</option><option value="net">🌐 Redes</option><option value="srv">🖥️ Servidores</option><option value="virt">☁️ Virtualización</option><option value="gen">📘 General</option>
+          <option value="hw">🟦 Emoji Libro </option><option value="net">🟩 Emoji Libro</option><option value="srv">🟪 Emoji Libro</option><option value="virt">🟨 Emoji Libro</option><option value="gen">⬜ Emoji Libro</option>
         </select>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
