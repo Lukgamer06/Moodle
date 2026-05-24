@@ -105,12 +105,26 @@ CREATE TABLE forums (
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
-CREATE TABLE forum_messages (
+CREATE TABLE forum_topics (
     id INT AUTO_INCREMENT PRIMARY KEY,
     forum_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (forum_id) REFERENCES forums(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE forum_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    forum_id INT,
+    topic_id INT,
     user_id INT NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (forum_id) REFERENCES forums(id) ON DELETE CASCADE,
+    FOREIGN KEY (topic_id) REFERENCES forum_topics(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
