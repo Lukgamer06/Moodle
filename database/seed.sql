@@ -126,6 +126,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Instalación de VirtualBox y configuración de máquinas virtuales', 'https://www.youtube.com/watch?v=rJ9_hREHMPA', '14 minutos'),
 (@unit_id, 'pdf', 'Manual oficial de VirtualBox', 'https://www.virtualbox.org/manual/UserManual.html', 'Documento completo');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 1', 'Evaluación del módulo 1: Introducción a la Infraestructura Tecnológica');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions (activity_id, question, option_a, option_b, option_c, option_d, correct_option, order_index) VALUES
+(@activity_id, '¿Cuál de las siguientes opciones describe mejor qué es un hipervisor tipo 1?', 'Un software que se ejecuta sobre un sistema operativo anfitrión', 'Un hipervisor que se ejecuta directamente sobre el hardware', 'Un sistema operativo especializado en redes', 'Un gestor de paquetes para Linux', 'b', 1),
+(@activity_id, 'VirtualBox es un hipervisor tipo 1.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'b', 2),
+(@activity_id, '¿Cuál de las siguientes es una ventaja de usar máquinas virtuales?', 'Permiten ejecutar múltiples sistemas en un mismo hardware', 'Aumentan el consumo eléctrico', 'Eliminan la necesidad de sistemas operativos', 'Solo funcionan en Windows', 'a', 3),
+(@activity_id, '¿Cuál es el propósito principal de instalar Fedora Server en VirtualBox?', 'Aprender a programar en Python', 'Simular un entorno de servidor real', 'Crear redes inalámbricas', 'Configurar servicios de Windows', 'b', 4),
+(@activity_id, '¿Cuál es uno de los pasos esenciales para crear una máquina virtual en VirtualBox?', 'Configurar la memoria RAM y CPU', 'Instalar drivers de impresora', 'Crear un usuario en Linux', 'Configurar un servidor web', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 2
 -- ============================================================
@@ -144,6 +156,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Comandos básicos de Linux para principiantes', 'https://www.youtube.com/watch?v=L906Kti3gzE', '35 minutos'),
 (@unit_id, 'pdf', 'Linux Command Line Guide', 'https://linuxcommand.org/tlcl.php', 'Libro completo');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 2', 'Evaluación del módulo 2: Comandos básicos y sistema de archivos en Linux');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions (activity_id, question, option_a, option_b, option_c, option_d, correct_option, order_index) VALUES
+(@activity_id, '¿Qué comando permite cambiar de directorio?', 'ls', 'cd', 'mkdir', 'pwd', 'b', 1),
+(@activity_id, '¿Qué comando crea un archivo vacío?', 'touch', 'nano', 'mkdir', 'cat', 'a', 2),
+(@activity_id, 'El comando rm -r elimina directorios de forma recursiva.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 3),
+(@activity_id, '¿Cuál es la diferencia entre apt y dnf?', 'apt es para Debian y dnf para Fedora', 'dnf es para Debian y apt para Fedora', 'Ambos son iguales', 'Ninguno gestiona paquetes', 'a', 4),
+(@activity_id, '¿Qué comando crea un directorio llamado proyecto?', 'mkdir proyecto', 'touch proyecto', 'cd proyecto', 'nano proyecto', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 3
@@ -164,6 +188,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Gestión de usuarios y permisos en Linux', 'https://www.youtube.com/watch?v=QDTdK9gQJH4', '16:46 minutos'),
 (@unit_id, 'pdf', 'Linux Permissions Guide', 'https://www.redhat.com/en/blog/linux-file-permissions-explained', 'Lectura corta');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 3', 'Evaluación del módulo 3: Usuarios, grupos y permisos en Linux');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué comando se utiliza para crear un usuario en Linux?', 'addgroup', 'useradd', 'passwd', 'chmod', 'b', 1),
+(NULL, @activity_id, 'chmod 755 archivo da permisos completos al propietario.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(NULL, @activity_id, '¿Qué es un grupo primario?', 'Grupo principal asignado al usuario', 'Grupo temporal', 'Grupo de red', 'Grupo sin permisos', 'a', 3),
+(NULL, @activity_id, '¿Qué comando cambia la contraseña de un usuario?', 'passwd', 'chown', 'sudo', 'groupmod', 'a', 4),
+(NULL, @activity_id, '¿Qué comando añade un usuario al grupo sudo?', 'usermod -aG sudo usuario', 'groupadd sudo usuario', 'sudoadd usuario', 'adduser sudo usuario', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 4
 -- ============================================================
@@ -182,6 +218,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Bash scripting para principiantes', 'https://www.youtube.com/watch?v=0tIZhTAuNuU', '5:25 minutos'),
 (@unit_id, 'doc', 'Manual de comandos TAR y ZIP', 'https://www.gnu.org/software/tar/manual/tar.html', 'Documento técnico');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 4', 'Evaluación del módulo 4: Empaquetamiento, compresión y scripting');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué comando crea un archivo tar comprimido?', 'tar -xvf', 'tar -cvf', 'tar -czvf', 'zip -u', 'c', 1),
+(NULL, @activity_id, 'El comando zip archivo.zip carpeta/ comprime una carpeta completa.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(NULL, @activity_id, '¿Qué es un script en Bash?', 'Un archivo ejecutable con comandos', 'Un archivo de texto sin comandos', 'Un archivo binario', 'Un archivo de red', 'a', 3),
+(NULL, @activity_id, '¿Qué comando hace ejecutable un script?', 'chmod 777', 'chmod +x', 'chmod exec', 'chmod run', 'b', 4),
+(NULL, @activity_id, '¿Qué comando muestra la fecha actual en Bash?', 'date', 'time', 'now', 'clock', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 5
@@ -202,6 +250,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Fundamentos de redes e IPv4', 'https://www.youtube.com/watch?v=SHbBso63X38', '17:41 minutos'),
 (@unit_id, 'doc', 'Introducción a Redes Cisco', 'https://www.cisco.com/c/es_mx/solutions/small-business/resource-center/networking/networking-basics.html', 'Archivo introductorio');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 5', 'Evaluación del módulo 5: Redes y direccionamiento IPv4');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Cuál de las siguientes es una dirección IP válida?', '256.10.5.1', '192.168.1.10', '999.0.0.1', '10.300.1.2', 'b', 1),
+(NULL, @activity_id, 'La máscara 255.255.255.0 permite 254 hosts utilizables.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(NULL, @activity_id, '¿Qué es una topología de red?', 'La forma en que se organizan los dispositivos', 'Un tipo de cable', 'Un protocolo', 'Un firewall', 'a', 3),
+(NULL, @activity_id, '¿Cuál es la función de una máscara de red?', 'Asignar DNS', 'Determinar red y host', 'Aumentar velocidad', 'Crear VLANs', 'b', 4),
+(NULL, @activity_id, '¿Cuántos hosts permite una red /27?', '32', '30', '64', '62', 'b', 5);
+
 -- ============================================================
 -- UNIDAD 6
 -- ============================================================
@@ -220,6 +280,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Configuración básica de routers Cisco', 'https://www.youtube.com/watch?v=EmyjMG4nN_4', '8:53 minutos'),
 (@unit_id, 'doc', 'Cisco IOS Fundamentals', 'https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/fundamentals/configuration/xe-16/fundamentals-xe-16-book.html', 'Documento técnico');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 6', 'Evaluación del módulo 6: Configuración de routers y Cisco IOS');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué comando entra al modo privilegiado en Cisco IOS?', 'enable', 'config', 'show run', 'interface', 'a', 1),
+(NULL, @activity_id, 'show ip interface brief muestra el estado de las interfaces.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(NULL, @activity_id, '¿Qué es un gateway?', 'El punto de salida de la red', 'Un switch', 'Un firewall', 'Un DNS', 'a', 3),
+(NULL, @activity_id, '¿Qué parámetros requiere ip address?', 'IP y máscara', 'IP y DNS', 'IP y gateway', 'IP y hostname', 'a', 4),
+(NULL, @activity_id, '¿Qué comando activa una interfaz?', 'no shutdown', 'shutdown', 'activate', 'enable int', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 7
@@ -240,6 +312,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Configuración de SSH en Linux', 'https://www.youtube.com/watch?v=6OxMXOYznNk', '4:42 minutos'),
 (@unit_id, 'doc', 'DNS y conectividad en Linux', 'https://www.redhat.com/en/blog/dns-domain-name-servers', 'Lectura técnica');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 7', 'Evaluación del módulo 7: SSH, DNS y conectividad');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué puerto usa SSH por defecto?', '20', '21', '22', '80', 'c', 1),
+(NULL, @activity_id, 'El comando ping verifica conectividad.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(NULL, @activity_id, '¿Qué es un servidor DNS?', 'Un sistema que resuelve nombres de dominio', 'Un firewall', 'Un router', 'Un proxy', 'a', 3),
+(NULL, @activity_id, '¿Qué comando permite conectarse por SSH?', 'ssh usuario@ip', 'connect usuario ip', 'login usuario ip', 'ssh ip usuario', 'a', 4),
+(NULL, @activity_id, '¿Qué comando verifica resolución DNS?', 'nslookup', 'ping -dns', 'dnscheck', 'hostping', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 8
 -- ============================================================
@@ -258,6 +342,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Instalación de Apache y PHP en Linux', 'https://www.youtube.com/watch?v=1j3MKZ9NlVY', '6:09 minutos'),
 (@unit_id, 'doc', 'Introducción a Nginx', 'https://nginx.org/en/docs/', 'Documentación completa');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 8', 'Evaluación del módulo 8: Apache, Nginx y PHP');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Cuál es el archivo principal de configuración de Apache?', 'nginx.conf', 'httpd.conf', 'apache.ini', 'server.conf', 'b', 1),
+(NULL, @activity_id, 'Nginx funciona como servidor web y proxy inverso.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(NULL, @activity_id, '¿Qué diferencia clave hay entre Apache y Nginx?', 'Apache usa procesos, Nginx usa eventos', 'Nginx solo funciona en Windows', 'Apache no soporta PHP', 'Ninguno soporta HTTPS', 'a', 3),
+(NULL, @activity_id, '¿Qué comando instala Apache en Fedora?', 'sudo dnf install apache', 'sudo dnf install httpd', 'sudo dnf install nginx', 'sudo dnf install web', 'b', 4),
+(NULL, @activity_id, '¿Qué archivo define la configuración principal de Nginx?', 'nginx.conf', 'httpd.conf', 'server.ini', 'main.conf', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 9
@@ -278,6 +374,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'PostgreSQL para principiantes', 'https://www.youtube.com/watch?v=prbF4O0d-7M', '15:16 minutos'),
 (@unit_id, 'doc', 'Documentación oficial PostgreSQL', 'https://www.postgresql.org/docs/', 'Documentación completa');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 9', 'Evaluación del módulo 9: PostgreSQL y SQL básico');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions (activity_id, question, option_a, option_b, option_c, option_d, correct_option, order_index) VALUES
+(@activity_id, '¿Qué comando inicia la consola de PostgreSQL?', 'mysql', 'psql', 'pgadmin', 'sqlstart', 'b', 1),
+(@activity_id, 'En PostgreSQL un usuario y un rol pueden ser lo mismo.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(@activity_id, '¿Qué es una tabla?', 'Un conjunto de datos organizados en filas y columnas', 'Un archivo de texto', 'Un script', 'Un índice', 'a', 3),
+(@activity_id, '¿Qué comando crea una base de datos?', 'CREATE USER test;', 'CREATE TABLE test;', 'CREATE DATABASE test;', 'NEW DATABASE test;', 'c', 4),
+(@activity_id, '¿Qué comando crea un usuario en PostgreSQL?', 'CREATE USER nombre WITH PASSWORD ''123'';', 'ADD USER nombre;', 'NEW USER nombre;', 'useradd nombre;', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 10
 -- ============================================================
@@ -296,6 +404,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Uso de SCP en Linux', 'https://www.youtube.com/watch?v=Oyf4dUq-LXs', '3:53 minutos'),
 (@unit_id, 'video', 'Backups automáticos con Bash', 'https://www.youtube.com/watch?v=8ga0xhZuG6k', '23:38 minutos');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 10', 'Evaluación del módulo 10: SCP, respaldos y automatización');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions (activity_id, question, option_a, option_b, option_c, option_d, correct_option, order_index) VALUES
+(@activity_id, '¿Qué comando transfiere archivos con SCP?', 'scp archivo usuario@ip:/ruta', 'copy archivo usuario@ip', 'ssh archivo usuario', 'send archivo ip', 'a', 1),
+(@activity_id, 'SCP utiliza SSH para transferir archivos.', 'Verdadero', 'Falso', 'No aplica', 'No aplica', 'a', 2),
+(@activity_id, '¿Qué es un respaldo incremental?', 'Copia solo cambios desde el último respaldo', 'Copia todo siempre', 'Copia solo archivos grandes', 'Copia solo archivos nuevos', 'a', 3),
+(@activity_id, '¿Qué parámetro comprime en tar.gz?', 'z', 'x', 'c', 'g', 'a', 4),
+(@activity_id, '¿Qué herramienta permite programar respaldos diarios?', 'cron', 'backup', 'daily', 'schedule', 'a', 5);
 
 -- ============================================================
 -- FOROS DEL CURSO DE INFRAESTRUCTURA

@@ -38,6 +38,7 @@ CREATE TABLE units (
     description TEXT,
     icon_class VARCHAR(50) DEFAULT 'gen',
     order_index INT NOT NULL DEFAULT 0,
+    card_color VARCHAR(20) NOT NULL DEFAULT '#FFFFFF',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
