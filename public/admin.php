@@ -360,19 +360,6 @@ if ($course_id) {
     </div>
   </div>
 
-  <!-- Nuevo Tema de Foro -->
-  <div class="modal-overlay" id="modal-newForumTopic">
-    <div class="modal">
-      <div class="modal-header"><span class="modal-title">Nuevo Tema de Discusión</span><button class="modal-close" onclick="closeModal('newForumTopic')"><i class="fa-solid fa-xmark"></i></button></div>
-      <div class="form-group"><label class="form-label">Título del tema</label><input class="form-input" id="newForumTopicTitle"></div>
-      <div class="form-group"><label class="form-label">Descripción (opcional)</label><textarea class="form-textarea" id="newForumTopicDesc" style="min-height:60px;"></textarea></div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button class="btn btn-ghost" onclick="closeModal('newForumTopic')">Cancelar</button>
-        <button class="btn btn-primary" onclick="createForumTopic()">Crear</button>
-      </div>
-    </div>
-  </div>
-
 </main>
 
 <script src="js/app.js"></script>
@@ -1128,16 +1115,14 @@ async function loadForums() {
   container.innerHTML = forums.map(f => `
     <div class="forum-item">
       <button class="forum-header" onclick="toggleForum(this)">
-        <span>${escapeHtml(f.title)}</span>
+        <span>${f.title}</span>
         <i class="fa-solid fa-chevron-down chevron"></i>
       </button>
       <div class="forum-body" data-forum-id="${f.id}">
-        <div class="forum-meta-title">${escapeHtml(f.title)}</div>
-        <div class="forum-meta-desc">${escapeHtml(f.description || '')}</div>
+        <div class="forum-meta-title">${f.title}</div>
+        <div class="forum-meta-desc">${f.description || ''}</div>
         <div class="forum-sep"></div>
-        <button class="add-topic-btn" onclick="showNewForumTopicModal()"><i class="fa-solid fa-plus"></i> Nuevo Tema</button>
-        <div class="topics-list"></div>
-        <div class="messages-container"></div>
+        <div class="messages-container" id="messages-${f.id}">Cargando...</div>
         <div class="forum-input">
           <textarea class="forum-textarea" placeholder="Escribe un mensaje..."></textarea>
           <button class="send-btn" onclick="sendMsg(this)"><i class="fa-solid fa-paper-plane"></i></button>
@@ -1146,6 +1131,7 @@ async function loadForums() {
       </div>
     </div>
   `).join('');
+  forums.forEach(f => loadForumMessages(f.id));
 }
 async function loadForumMessages(forumId) {
   const container = document.getElementById('messages-' + forumId);
