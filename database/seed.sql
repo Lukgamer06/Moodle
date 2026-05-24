@@ -435,3 +435,630 @@ INSERT INTO forums (course_id, title, description, created_by) VALUES
 (@course_id, 'Foro General', 'Foro general para presentaciones, avisos, dudas y preguntas abiertas del curso.', @teacher_id),
 (@course_id, 'Consultas sobre Laboratorios', 'Espacio para resolver dudas relacionadas con las prácticas de Linux, redes, servidores y bases de datos.', @teacher_id),
 (@course_id, 'Soporte Técnico del Curso', 'Foro para reportar problemas técnicos relacionados con máquinas virtuales, comandos, servicios o configuración del entorno.', @teacher_id);
+
+-- ============================================================
+-- CURSO: DESARROLLO Y ARQUITECTURA BACKEND
+-- Este bloque NO modifica backend ni frontend.
+-- Solo carga datos semilla del curso Backend.
+-- ============================================================
+
+SET @course_name := 'Desarrollo y Arquitectura Backend';
+
+-- Limpiar datos anteriores del mismo curso para evitar duplicados.
+-- Se hace en orden para respetar llaves foráneas.
+
+DELETE g FROM grades g
+JOIN submissions s ON g.submission_id = s.id
+JOIN activities a ON s.activity_id = a.id
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE s FROM submissions s
+JOIN activities a ON s.activity_id = a.id
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE q FROM quiz_questions q
+JOIN activities a ON q.activity_id = a.id
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE a FROM activities a
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE r FROM resources r
+JOIN units u ON r.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE m FROM forum_messages m
+JOIN forums f ON m.forum_id = f.id
+JOIN courses c ON f.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE f FROM forums f
+JOIN courses c ON f.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE e FROM enrollments e
+JOIN courses c ON e.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE u FROM units u
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE FROM courses
+WHERE name = @course_name;
+
+-- Profesor del curso
+SET @teacher_id := (
+  SELECT id
+  FROM users
+  WHERE email = 'profesor@minimoodle.local'
+  LIMIT 1
+);
+
+-- Crear curso
+INSERT INTO courses (name, description, teacher_id, card_color, cover_image)
+VALUES (
+  @course_name,
+  '<h2 style="text-align:center;">Bienvenida del Curso</h2>
+
+  <p>Bienvenidos al curso de Desarrollo y Arquitectura Backend. En este espacio aprenderemos los fundamentos necesarios para crear aplicaciones web modernas utilizando Laravel y diferentes herramientas del ecosistema backend. A lo largo del curso trabajaremos conceptos relacionados con rutas, controladores, migraciones, bases de datos, APIs REST, validaciones, arquitectura MVC y despliegue de proyectos. Además, se desarrollarán actividades prácticas que permitirán fortalecer habilidades tanto en programación como en diseño de soluciones tecnológicas reales.</p>
+
+  <h2 style="text-align:center;">Propósito del Curso</h2>
+
+  <p>El propósito de este curso es que los estudiantes comprendan y apliquen los principios básicos del desarrollo backend mediante la construcción de aplicaciones funcionales utilizando Laravel. Asimismo, se busca fortalecer las habilidades en manejo de bases de datos, creación de APIs, arquitectura MVC, validaciones, autenticación y consumo de servicios, permitiendo que los estudiantes desarrollen proyectos escalables y cercanos al entorno profesional del desarrollo web.</p>
+
+  <img 
+    src="https://i.pinimg.com/736x/d8/a0/4a/d8a04ab868395674b7694f49d2336adc.jpg" 
+    alt="Imagen Desarrollo Backend" 
+    class="course-img course-img-medium course-img-center"
+  >',
+  @teacher_id,
+  '#C2FFCB',
+  'assets/course-covers/backend.png'
+);
+
+SET @course_id := LAST_INSERT_ID();
+
+-- Matricular estudiantes existentes
+INSERT INTO enrollments (user_id, course_id)
+SELECT id, @course_id
+FROM users
+WHERE email IN (
+  'lucas@minimoodle.local',
+  'ana@minimoodle.local',
+  'pedro@minimoodle.local'
+);
+
+-- ============================================================
+-- UNIDAD 1
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 1 — Introducción al Desarrollo Backend y Laravel',
+  'En este módulo se estudiarán los conceptos básicos del desarrollo backend y el funcionamiento de Laravel como framework. Además, se aprenderá cómo configurar un proyecto desde cero, instalar dependencias y ejecutar el servidor de desarrollo.',
+  'net',
+  1,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Introducción a Laravel desde cero', 'https://www.youtube.com/watch?v=ImtZ5yENzgE', '4 horas y 25 minutos'),
+(@unit_id, 'doc', 'Documentación oficial de Laravel', 'https://laravel.com/docs/13.x', 'Documento completo');
+
+-- ============================================================
+-- UNIDAD 2
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 2 — Configuración de Entorno y Gestión de Proyectos',
+  'En este módulo los estudiantes aprenderán a configurar proyectos Laravel utilizando XAMPP, Composer y Git. Asimismo, se trabajará la conexión con bases de datos mediante el archivo .env y la ejecución de migraciones.',
+  'net',
+  2,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Configuración de Laravel con XAMPP', 'https://www.youtube.com/watch?v=_Rsen6614Dg', '6:23 minutos'),
+(@unit_id, 'doc', 'Guía de instalación de Composer', 'https://getcomposer.org/doc/', 'Documento técnico');
+
+-- ============================================================
+-- UNIDAD 3
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 3 — Arquitectura MVC en Laravel',
+  'Durante este módulo se estudiará el funcionamiento de la arquitectura Modelo Vista Controlador dentro de Laravel. Además, se aprenderá cómo interactúan las rutas, controladores, modelos y vistas dentro de una aplicación web.',
+  'net',
+  3,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Arquitectura MVC explicada en Laravel', 'https://www.youtube.com/watch?v=tza73mpt2EM', '14:05 minutos'),
+(@unit_id, 'doc', 'Conceptos MVC en Laravel', 'https://laravel.com/docs/13.x/structure', 'Lectura técnica');
+
+-- ============================================================
+-- UNIDAD 4
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 4 — Migraciones y Bases de Datos',
+  'En este módulo se aprenderá a crear tablas, atributos y relaciones utilizando migraciones en Laravel. Asimismo, se trabajará el manejo de llaves foráneas y conexión entre entidades dentro de bases de datos relacionales.',
+  'net',
+  4,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Migraciones en Laravel paso a paso', 'https://www.youtube.com/watch?v=R8B4og-BeCk', '18:53 minutos'),
+(@unit_id, 'doc', 'Documentación oficial de migraciones', 'https://laravel.com/docs/migrations', 'Documento completo');
+
+-- ============================================================
+-- UNIDAD 5
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 5 — Modelos, Seeders y Factories',
+  'En este módulo se estudiará cómo crear modelos, seeders y factories en Laravel. Además, los estudiantes aprenderán a generar datos de prueba y poblar automáticamente las bases de datos para facilitar el desarrollo y las pruebas.',
+  'net',
+  5,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Seeders en Laravel', 'https://www.youtube.com/watch?v=zNTF3U2Hsq0', '12:16 minutos'),
+(@unit_id, 'doc', 'Eloquent ORM Documentation', 'https://laravel.com/docs/eloquent', 'Documento completo');
+
+-- ============================================================
+-- UNIDAD 6
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 6 — Formularios y Validaciones Seguras',
+  'En este módulo se trabajará la creación de formularios dinámicos y validaciones seguras en Laravel. Asimismo, se estudiará el uso de reglas de validación, mensajes de error y protección mediante tokens CSRF.',
+  'net',
+  6,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Validaciones en Laravel', 'https://www.youtube.com/watch?v=hafioSprmGs', '25:33 minutos'),
+(@unit_id, 'doc', 'Validaciones oficiales Laravel', 'https://laravel.com/docs/validation', 'Documento técnico');
+
+-- ============================================================
+-- UNIDAD 7
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 7 — Gestión de Archivos e Imágenes',
+  'Durante este módulo se aprenderá a subir imágenes y archivos desde formularios utilizando Laravel. Además, se trabajará el almacenamiento de archivos en el sistema y la configuración de enlaces públicos mediante storage.',
+  'net',
+  7,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Subida de imágenes en Laravel', 'https://www.youtube.com/watch?v=SiKPB69lJX0', '5:11 minutos'),
+(@unit_id, 'doc', 'File Storage Laravel', 'https://laravel.com/docs/filesystem', 'Documento completo');
+
+-- ============================================================
+-- UNIDAD 8
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 8 — CRUD Completo en Laravel',
+  'En este módulo se desarrollarán operaciones CRUD completas para aplicaciones web. Asimismo, se implementarán funcionalidades de creación, consulta, edición y eliminación de registros utilizando Laravel.',
+  'net',
+  8,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'CRUD completo en Laravel', 'https://www.youtube.com/watch?v=GrUrw245L48', '1 hora 15 minutos'),
+(@unit_id, 'doc', 'Laravel Resource Controllers', 'https://laravel.com/docs/controllers', 'Documento técnico');
+
+-- ============================================================
+-- UNIDAD 9
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 9 — APIs REST y Microservicios',
+  'En este módulo se estudiará la creación de APIs REST utilizando Laravel. Además, se aprenderá cómo funcionan los microservicios, el intercambio de información mediante JSON y el consumo de endpoints desde clientes externos.',
+  'net',
+  9,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Crear APIs REST en Laravel', 'https://www.youtube.com/watch?v=YGqCZjdgJJk', '1 hora y 50 minutos'),
+(@unit_id, 'doc', 'APIs y JSON en Laravel', 'https://laravel.com/docs/sanctum', 'Documento completo');
+
+-- ============================================================
+-- UNIDAD 10
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 10 — Diseño Responsive y Despliegue de Proyectos',
+  'En este módulo se trabajará el diseño responsive para aplicaciones web modernas. Asimismo, se estudiarán conceptos básicos de despliegue, integración de tecnologías frontend y publicación de proyectos en entornos reales.',
+  'net',
+  10,
+  '#C2FFCB'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'video', 'Diseño responsive con Flexbox y Grid', 'https://www.youtube.com/watch?v=3YW65K6LcIA', '46 minutos'),
+(@unit_id, 'doc', 'Responsive Web Design', 'https://developer.mozilla.org/es/docs/Learn_web_development/Core/CSS_layout/Responsive_Design', 'Lectura completa');
+
+-- ============================================================
+-- FOROS DEL CURSO BACKEND
+-- ============================================================
+
+INSERT INTO forums (course_id, title, description, created_by) VALUES
+(@course_id, 'Foro General Backend', 'Foro general para presentaciones, avisos, dudas y preguntas abiertas del curso de Desarrollo y Arquitectura Backend.', @teacher_id),
+(@course_id, 'Consultas sobre Laravel y Bases de Datos', 'Espacio para resolver dudas relacionadas con rutas, controladores, migraciones, modelos, seeders, bases de datos y validaciones.', @teacher_id),
+(@course_id, 'Soporte Técnico del Curso Backend', 'Foro para reportar problemas técnicos relacionados con instalación, configuración del entorno, errores de Laravel, Composer, XAMPP o despliegue.', @teacher_id);
+
+
+-- ============================================================
+-- CURSO: INTELIGENCIA ARTIFICIAL APLICADA AL ANÁLISIS DE DATOS
+-- Este bloque NO modifica backend ni frontend.
+-- Solo carga datos semilla del curso de IA.
+-- ============================================================
+
+SET @course_name := 'Inteligencia Artificial aplicada al analisis de datos';
+
+-- Limpiar datos anteriores del mismo curso para evitar duplicados.
+-- Se hace en orden para respetar llaves foráneas.
+
+DELETE g FROM grades g
+JOIN submissions s ON g.submission_id = s.id
+JOIN activities a ON s.activity_id = a.id
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE s FROM submissions s
+JOIN activities a ON s.activity_id = a.id
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE q FROM quiz_questions q
+JOIN activities a ON q.activity_id = a.id
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE a FROM activities a
+JOIN units u ON a.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE r FROM resources r
+JOIN units u ON r.unit_id = u.id
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE m FROM forum_messages m
+JOIN forums f ON m.forum_id = f.id
+JOIN courses c ON f.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE f FROM forums f
+JOIN courses c ON f.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE e FROM enrollments e
+JOIN courses c ON e.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE u FROM units u
+JOIN courses c ON u.course_id = c.id
+WHERE c.name = @course_name;
+
+DELETE FROM courses
+WHERE name = @course_name;
+
+-- Profesor del curso
+SET @teacher_id := (
+  SELECT id
+  FROM users
+  WHERE email = 'profesor@minimoodle.local'
+  LIMIT 1
+);
+
+-- Crear curso
+INSERT INTO courses (name, description, teacher_id, card_color, cover_image)
+VALUES (
+  @course_name,
+  '<h2 style="text-align:center;">Bienvenida del curso</h2>
+
+  <p>Bienvenido al curso virtual de Inteligencia Artificial aplicada al análisis de datos. En este espacio aprenderás, paso a paso, cómo preparar datos, analizarlos, limpiarlos y usarlos para construir modelos de inteligencia artificial. La idea no es memorizar fórmulas ni comandos sin sentido, sino comprender qué está pasando con los datos y cómo tomar mejores decisiones antes, durante y después de entrenar un modelo.</p>
+
+  <p>A lo largo del curso trabajarás con ejemplos prácticos en Python, especialmente usando herramientas como pandas, scikit-learn, Google Colab y Streamlit. Cada módulo está pensado para que avances de forma progresiva: primero entenderás los datos, luego los transformarás, después entrenarás modelos y finalmente aprenderás a presentar tus resultados en una aplicación sencilla.</p>
+
+  <h2 style="text-align:center;">Propósito del curso</h2>
+
+  <p>El propósito de este curso es que el estudiante desarrolle las habilidades necesarias para preparar, analizar, transformar y modelar datos mediante técnicas básicas y aplicadas de inteligencia artificial, comprendiendo cuándo usar modelos supervisados, no supervisados, de clasificación, regresión o ensamble.</p>
+
+  <p>Al finalizar el curso, el estudiante estará en capacidad de reconocer variables, etiquetas, datos categóricos y numéricos; realizar análisis exploratorio; limpiar valores faltantes; codificar datos; seleccionar características importantes; entrenar modelos como KNN, SVM, árboles de decisión, Random Forest y XGBoost; evaluar resultados mediante métricas; y construir una aplicación básica para mostrar predicciones.</p>
+
+  <img 
+    src="https://i.pinimg.com/736x/4a/14/0b/4a140b5c2d311f593b2a86933d2adedf.jpg" 
+    alt="Imagen Inteligencia Artificial aplicada al análisis de datos" 
+    class="course-img course-img-medium course-img-center"
+  >',
+  @teacher_id,
+  '#FEE3FF',
+  'assets/course-covers/ia-datos.png'
+);
+
+SET @course_id := LAST_INSERT_ID();
+
+-- Matricular estudiantes existentes
+INSERT INTO enrollments (user_id, course_id)
+SELECT id, @course_id
+FROM users
+WHERE email IN (
+  'lucas@minimoodle.local',
+  'ana@minimoodle.local',
+  'pedro@minimoodle.local'
+);
+
+-- ============================================================
+-- UNIDAD 1
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 1 — Fundamentos de inteligencia artificial y aprendizaje automático',
+  'En este primer módulo el estudiante conocerá las ideas principales que dan inicio al trabajo con inteligencia artificial. Se abordará la diferencia entre modelos supervisados y no supervisados, el papel de las variables de entrada o features, la importancia de la etiqueta o label, y la diferencia entre problemas de clasificación y regresión. También se revisará cómo identificar si un problema busca predecir una categoría, un valor numérico o encontrar grupos dentro de los datos.',
+  'hw',
+  1,
+  '#C7D1FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Introducción al aprendizaje automático con scikit-learn', 'https://scikit-learn.org/stable/supervised_learning.html', 'Documento web de consulta'),
+(@unit_id, 'doc', 'Machine Learning Crash Course', 'https://developers.google.com/machine-learning/crash-course', 'Curso web organizado por módulos');
+
+-- ============================================================
+-- UNIDAD 2
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 2 — Análisis exploratorio de datos: hacer que los datos hablen',
+  'En este módulo el estudiante aprenderá a revisar un conjunto de datos antes de aplicar cualquier modelo. Se trabajarán conceptos como media, mediana, moda, mínimo, máximo, distribución de datos, tipos de variables y revisión general del dataset con comandos como describe(), info(), columns, unique() y value_counts(). También se explicará cómo usar gráficos como histogramas, barras y cajas de bigotes para reconocer patrones, detectar posibles errores y comprender si los datos están listos para ser usados en inteligencia artificial.',
+  'hw',
+  2,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Primeros pasos con pandas', 'https://pandas.pydata.org/docs/getting_started/index.html', 'Documento web de consulta'),
+(@unit_id, 'doc', 'Tutoriales introductorios de pandas', 'https://pandas.pydata.org/docs/getting_started/intro_tutorials/', 'Serie de tutoriales cortos');
+
+-- ============================================================
+-- UNIDAD 3
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 3 — Limpieza de datos, valores faltantes y datos atípicos',
+  'En este módulo el estudiante aprenderá que un modelo de inteligencia artificial depende mucho de la calidad de los datos que recibe. Se estudiará cómo identificar valores nulos, cuándo eliminar columnas o registros, cómo usar reglas como el porcentaje de datos faltantes, y cómo aplicar métodos de imputación con media, moda, ffill, bfill o herramientas como SimpleImputer. Además, se explicará cómo reconocer valores atípicos mediante mínimos, máximos y cajas de bigotes, tomando decisiones cuidadosas antes de eliminar o transformar información.',
+  'hw',
+  3,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Preprocesamiento de datos en scikit-learn', 'https://scikit-learn.org/stable/modules/preprocessing.html', 'Documento web de consulta'),
+(@unit_id, 'doc', 'Guía de usuario de pandas', 'https://pandas.pydata.org/docs/user_guide/index.html', 'Documento web amplio de referencia');
+
+-- ============================================================
+-- UNIDAD 4
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 4 — Codificación de variables categóricas y construcción de vistas minables',
+  'En este módulo el estudiante aprenderá a transformar datos de texto o categorías en datos numéricos que puedan ser entendidos por los modelos. Se abordarán técnicas como LabelEncoder, OrdinalEncoder, codificación one-hot, variables dummy y codificación por frecuencia. También se explicará la diferencia entre variables nominales, ordinales y binarias, y por qué algunos datos como cédulas, identificadores o nombres no deben tratarse como números estadísticos. Al finalizar, el estudiante comprenderá qué significa construir una vista minable: una versión limpia y preparada del dataset para modelar.',
+  'hw',
+  4,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Codificación y preprocesamiento en scikit-learn', 'https://scikit-learn.org/stable/modules/preprocessing.html', 'Documento web de consulta'),
+(@unit_id, 'doc', '10 minutos con pandas', 'https://pandas.pydata.org/docs/user_guide/10min.html', 'Guía corta de inicio');
+
+-- ============================================================
+-- UNIDAD 5
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 5 — Normalización, escalamiento y generación de características',
+  'En este módulo el estudiante comprenderá por qué no basta con tener datos limpios: también es necesario que estén en escalas adecuadas. Se trabajarán técnicas como MinMaxScaler y StandardScaler, especialmente cuando las variables tienen rangos muy diferentes. Además, se explicará cómo generar nuevas características a partir de datos existentes, por ejemplo transformar fechas, calcular edades, crear variables derivadas o reducir columnas combinando información útil.',
+  'hw',
+  5,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'StandardScaler en scikit-learn', 'https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html', 'Documento técnico de consulta'),
+(@unit_id, 'doc', 'Preprocesamiento de datos', 'https://scikit-learn.org/stable/modules/preprocessing_targets.html#', 'Documento web de consulta');
+
+-- ============================================================
+-- UNIDAD 6
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 6 — Selección de características y reducción de variables',
+  'En este módulo el estudiante aprenderá a elegir las variables más útiles para un modelo. Se abordará el concepto de varianza, la eliminación de características con poca variación, el uso de VarianceThreshold, SelectKBest, Chi-cuadrado y f_classif. También se explicará por qué no siempre tener muchas columnas significa tener un mejor modelo. La intención es que el estudiante aprenda a quedarse con la información más relevante, evitando ruido, columnas repetidas o variables que no aportan valor a la predicción.',
+  'hw',
+  6,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Selección de características en scikit-learn', 'https://scikit-learn.org/stable/modules/feature_selection.html', 'Documento web de consulta'),
+(@unit_id, 'doc', 'SelectKBest', 'https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectKBest.html', 'Documento técnico de referencia');
+
+-- ============================================================
+-- UNIDAD 7
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 7 — Modelos supervisados: clasificación y regresión',
+  'En este módulo el estudiante empezará a construir modelos supervisados. Se estudiará el proceso general: importar librerías, declarar el modelo, entrenarlo con fit, predecir con predict y validar resultados. También se explicará la diferencia entre clasificación y regresión, usando ejemplos sencillos como predecir si una persona compra o no compra, si un paciente tiene o no una condición, o si se desea estimar un valor numérico. El estudiante aprenderá a separar variables de entrada y etiqueta, y a dividir datos en entrenamiento y prueba.',
+  'hw',
+  7,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Aprendizaje supervisado en scikit-learn', 'https://scikit-learn.org/stable/supervised_learning.html', 'Documento web de consulta'),
+(@unit_id, 'doc', 'Clasificación en Machine Learning Crash Course', 'https://developers.google.com/machine-learning/crash-course/classification', 'Módulo web de aprendizaje');
+
+-- ============================================================
+-- UNIDAD 8
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 8 — Modelos de clasificación: KNN, SVM, Naive Bayes y árboles de decisión',
+  'En este módulo el estudiante conocerá varios modelos de clasificación utilizados en inteligencia artificial. Se trabajarán modelos como KNN, SVM, Naive Bayes y árboles de decisión, comprendiendo de manera sencilla cuándo puede ser útil cada uno. Se explicará que KNN trabaja con cercanía entre datos, SVM busca separar grupos mediante fronteras de decisión, Naive Bayes usa probabilidades, y los árboles toman decisiones por ramas. También se abordarán ideas como kernel, hiperparámetros, profundidad del árbol y riesgo de sobreentrenamiento.',
+  'hw',
+  8,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Mapa para escoger estimadores en scikit-learn', 'https://scikit-learn.org/stable/machine_learning_map.html', 'Recurso visual interactivo'),
+(@unit_id, 'doc', 'Guía de usuario de scikit-learn', 'https://scikit-learn.org/stable/user_guide.html', 'Documento web completo de referencia');
+
+-- ============================================================
+-- UNIDAD 9
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 9 — Modelos no supervisados, clustering y balanceo de datos',
+  'En este módulo el estudiante aprenderá qué ocurre cuando no existe una etiqueta definida en los datos. Se estudiarán los modelos no supervisados, especialmente el clustering, como una forma de encontrar grupos o patrones ocultos. También se abordará el balanceo de datos, incluyendo conceptos como under sampling, over sampling, datos sintéticos, SMOTE y muestreo estratificado. El objetivo es que el estudiante comprenda que no todos los problemas consisten en predecir una respuesta conocida; algunos buscan descubrir estructuras dentro de la información.',
+  'hw',
+  9,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Clustering en scikit-learn', 'https://scikit-learn.org/stable/modules/clustering.html', 'Documento web de consulta'),
+(@unit_id, 'doc', 'KMeans en scikit-learn', 'https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html', 'Documento técnico de referencia');
+
+-- ============================================================
+-- UNIDAD 10
+-- ============================================================
+
+INSERT INTO units (course_id, title, description, icon_class, order_index, card_color)
+VALUES (
+  @course_id,
+  'Módulo 10 — Evaluación, modelos ensamblados y despliegue con Streamlit',
+  'En este último módulo el estudiante integrará lo aprendido para evaluar y presentar modelos de inteligencia artificial. Se revisarán métricas como accuracy, precisión, recall, matriz de confusión, curva ROC y área bajo la curva. También se estudiarán modelos ensamblados como Random Forest y XGBoost, entendiendo cómo combinan varios modelos para mejorar resultados. Finalmente, el estudiante aprenderá a guardar modelos con joblib y construir una aplicación sencilla en Streamlit para que otras personas puedan ingresar datos y obtener una predicción de manera visual e interactiva.',
+  'hw',
+  10,
+  '#FEE3FF'
+);
+
+SET @unit_id := LAST_INSERT_ID();
+
+INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
+(@unit_id, 'doc', 'Métricas y evaluación de modelos en scikit-learn', 'https://scikit-learn.org/stable/modules/model_evaluation.html', 'Documento web de consulta'),
+(@unit_id, 'doc', 'Despliegue de aplicaciones en Streamlit Community Cloud', 'https://docs.streamlit.io/deploy/streamlit-community-cloud', 'Guía web paso a paso');
+
+-- ============================================================
+-- FOROS DEL CURSO DE IA
+-- ============================================================
+
+INSERT INTO forums (course_id, title, description, created_by) VALUES
+(@course_id, 'Foro General de Inteligencia Artificial', 'Foro general para presentaciones, avisos, dudas y preguntas abiertas del curso de Inteligencia Artificial aplicada al análisis de datos.', @teacher_id),
+(@course_id, 'Consultas sobre datos y modelos', 'Espacio para resolver dudas relacionadas con análisis exploratorio, limpieza de datos, codificación, selección de características, entrenamiento y evaluación de modelos.', @teacher_id),
+(@course_id, 'Soporte técnico de Python, Colab y Streamlit', 'Foro para reportar problemas técnicos relacionados con Python, pandas, scikit-learn, Google Colab, Streamlit o ejecución de notebooks.', @teacher_id);
