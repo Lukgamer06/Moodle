@@ -534,7 +534,7 @@ body {
 body.dashboard-page {
   background-color: #e3e9ff;
   background-image:
-    linear-gradient(rgba(173, 153, 249, 0.88), rgba(153, 138, 219, 0.88)),
+    linear-gradient(rgba(159, 167, 222, 0.88), rgba(206, 190, 163, 0.88)),
     url("../assets/books-bg.png");
   background-size: cover;
   background-position: center;
@@ -846,4 +846,90 @@ body.course-page .page-wrap {
     width: 100%;
     max-width: 100%;
   }
+}
+
+/* ── TARJETA DE CURSO EN DASHBOARD ── */
+.dashboard-course-card {
+  padding: 14px;
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+}
+
+.course-card-cover-wrap {
+  width: 100%;
+  height: 145px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #eef2ff;
+  margin-bottom: 14px;
+}
+
+.course-card-cover {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.course-card-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #C7D1FF, #E8E3FF);
+  color: #1e3a8a;
+  font-size: 34px;
+}
+
+.course-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ── TARJETA DE CURSO EN DASHBOARD ── */
+.dashboard-course-card {
+  padding: 14px;
+  text-decoration: none;
+  display: block;
+  overflow: hidden;
+}
+
+.course-card-cover-wrap {
+  width: 100%;
+  height: 145px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #eef2ff;
+  margin-bottom: 14px;
+}
+
+.course-card-cover {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.course-card-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #C7D1FF, #E8E3FF);
+  color: #1e3a8a;
+  font-size: 34px;
+}
+
+.course-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0;
+  text-align: center;
+  line-height: 1.3;
 }

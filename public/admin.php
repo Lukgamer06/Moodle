@@ -130,60 +130,122 @@ if ($course_id) {
   </aside>
   <div id="overlay" class="overlay"></div>
 
-  <!-- MODALES (los mismos de antes) -->
-  <!-- Editar Introducción / Personalizar Curso -->
-  <div class="modal-overlay" id="modal-editIntro">
-    <div class="modal modal-lg">
-      <div class="modal-header">
-        <span class="modal-title">Personalizar Curso</span>
-        <button class="modal-close" onclick="closeModal('editIntro')">
-          <i class="fa-solid fa-xmark"></i>
+ <!-- MODALES-->
+<!-- Editar Introducción / Personalizar Curso -->
+<div class="modal-overlay" id="modal-editIntro">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title">Personalizar Curso</span>
+      <button class="modal-close" onclick="closeModal('editIntro')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Presentación del curso</label>
+
+      <div class="editor-toolbar">
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('bold')">
+          <b>B</b>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('italic')">
+          <i>I</i>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('underline')">
+          <u>U</u>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('insertUnorderedList')">
+          <i class="fa-solid fa-list-ul"></i>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('justifyLeft')">
+          <i class="fa-solid fa-align-left"></i>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('justifyCenter')">
+          <i class="fa-solid fa-align-center"></i>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="insertImageUrl('introEditor')">
+          <i class="fa-solid fa-image"></i> Imagen URL
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="resizeSelectedImage('small')">
+          Imagen pequeña
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="resizeSelectedImage('medium')">
+          Imagen mediana
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="resizeSelectedImage('large')">
+          Imagen grande
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="centerSelectedImage()">
+          <i class="fa-solid fa-align-center"></i> Centrar imagen
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="deleteSelectedImage()">
+          <i class="fa-solid fa-trash"></i> Borrar imagen
         </button>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Presentación del curso</label>
+      <div id="introEditor" class="html-editor" contenteditable="true"></div>
+    </div>
 
-        <div class="editor-toolbar">
-          <button type="button" onclick="formatEditor('bold')"><b>B</b></button>
-          <button type="button" onclick="formatEditor('italic')"><i>I</i></button>
-          <button type="button" onclick="formatEditor('underline')"><u>U</u></button>
-          <button type="button" onclick="formatEditor('insertUnorderedList')">
-            <i class="fa-solid fa-list-ul"></i>
-          </button>
-          <button type="button" onclick="formatEditor('justifyLeft')">
-            <i class="fa-solid fa-align-left"></i>
-          </button>
-          <button type="button" onclick="formatEditor('justifyCenter')">
-            <i class="fa-solid fa-align-center"></i>
-          </button>
-          <button type="button" onclick="insertImageUrl('introEditor')">
-            <i class="fa-solid fa-image"></i> Imagen URL
-          </button>
-        </div>
+    <div class="form-group">
+      <label class="form-label">Color de la caja de presentación</label>
 
-        <div id="introEditor" class="html-editor" contenteditable="true"></div>
-      </div>
+      <input 
+        type="hidden" 
+        id="courseCardColor" 
+        value="<?php echo htmlspecialchars($course['card_color'] ?? '#FFFFFF'); ?>"
+      >
 
-      <div class="form-group">
-        <label class="form-label">Color de la caja de presentación</label>
-        <input type="hidden" id="courseCardColor" value="<?php echo htmlspecialchars($course['card_color'] ?? '#FFFFFF'); ?>">
-
-        <div class="color-palette">
-          <button type="button" class="color-dot" style="background:#FFF9C7" onclick="selectCourseColor('#FFF9C7')"></button>
-          <button type="button" class="color-dot" style="background:#C7D1FF" onclick="selectCourseColor('#C7D1FF')"></button>
-          <button type="button" class="color-dot" style="background:#FFF8E8" onclick="selectCourseColor('#FFF8E8')"></button>
-          <button type="button" class="color-dot" style="background:#C2FFCB" onclick="selectCourseColor('#C2FFCB')"></button>
-          <button type="button" class="color-dot" style="background:#FEE3FF" onclick="selectCourseColor('#FEE3FF')"></button>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button class="btn btn-ghost" onclick="closeModal('editIntro')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveIntro()">Guardar</button>
+      <div class="color-palette">
+        <button type="button" class="color-dot" style="background:#FFF9C7" onclick="selectCourseColor('#FFF9C7')" title="Amarillo suave"></button>
+        <button type="button" class="color-dot" style="background:#C7D1FF" onclick="selectCourseColor('#C7D1FF')" title="Azul suave"></button>
+        <button type="button" class="color-dot" style="background:#FFF8E8" onclick="selectCourseColor('#FFF8E8')" title="Crema"></button>
+        <button type="button" class="color-dot" style="background:#C2FFCB" onclick="selectCourseColor('#C2FFCB')" title="Verde suave"></button>
+        <button type="button" class="color-dot" style="background:#FEE3FF" onclick="selectCourseColor('#FEE3FF')" title="Rosado suave"></button>
       </div>
     </div>
+
+    <div class="form-group">
+      <label class="form-label">Imagen de portada para el dashboard</label>
+
+      <input 
+        type="file" 
+        id="courseCoverInput" 
+        class="form-input" 
+        accept="image/png"
+      >
+
+      <small style="display:block;margin-top:6px;color:#64748b;">
+        Solo formato PNG. Esta imagen aparecerá en la tarjeta del curso en el dashboard.
+      </small>
+
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="uploadCourseCover()">
+          <i class="fa-solid fa-upload"></i> Subir/Reemplazar portada
+        </button>
+
+        <button type="button" class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteCourseCover()">
+          <i class="fa-solid fa-trash"></i> Eliminar portada
+        </button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('editIntro')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveIntro()">Guardar presentación</button>
+    </div>
   </div>
+</div>
 
   <!-- Agregar/Editar Unidad -->
   <div class="modal-overlay" id="modal-unit">
@@ -342,15 +404,132 @@ function formatEditor(command) {
   document.execCommand(command, false, null);
 }
 
+let selectedEditorImage = null;
+
+document.addEventListener('click', function (e) {
+  const clickedImage = e.target.closest('.html-editor img');
+
+  if (!clickedImage) return;
+
+  if (selectedEditorImage) {
+    selectedEditorImage.classList.remove('selected-editor-img');
+  }
+
+  selectedEditorImage = clickedImage;
+  selectedEditorImage.classList.add('selected-editor-img');
+});
+
+function cleanImageUrl(value) {
+  value = String(value || '').trim();
+
+  const match = value.match(/src=["']([^"']+)["']/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  return value;
+}
+
 function insertImageUrl(editorId) {
-  const url = prompt('Pega la URL de la imagen:');
+  let url = prompt('Pega SOLO la URL de la imagen. No pegues código HTML.');
   if (!url) return;
+
+  url = cleanImageUrl(url);
+
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    alert('Debes pegar una URL válida que empiece por http:// o https://');
+    return;
+  }
 
   const editor = document.getElementById(editorId);
   if (!editor) return;
 
+  const alt = prompt('Texto alternativo de la imagen:', 'Imagen del curso') || 'Imagen del curso';
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = alt;
+  img.className = 'course-img course-img-medium course-img-center';
+
+  const spaceAfter = document.createElement('p');
+  spaceAfter.innerHTML = '<br>';
+
   editor.focus();
-  document.execCommand('insertImage', false, url);
+
+  const selection = window.getSelection();
+
+  if (selection && selection.rangeCount > 0 && editor.contains(selection.anchorNode)) {
+    const range = selection.getRangeAt(0);
+
+    range.deleteContents();
+    range.insertNode(spaceAfter);
+    range.insertNode(img);
+
+    const newRange = document.createRange();
+    newRange.setStart(spaceAfter, 0);
+    newRange.collapse(true);
+
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  } else {
+    editor.appendChild(img);
+    editor.appendChild(spaceAfter);
+
+    const newRange = document.createRange();
+    newRange.setStart(spaceAfter, 0);
+    newRange.collapse(true);
+
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+
+  if (selectedEditorImage) {
+    selectedEditorImage.classList.remove('selected-editor-img');
+  }
+
+  selectedEditorImage = img;
+  selectedEditorImage.classList.add('selected-editor-img');
+}
+
+function getSelectedImage() {
+  if (selectedEditorImage && document.body.contains(selectedEditorImage)) {
+    return selectedEditorImage;
+  }
+
+  alert('Primero haz clic sobre la imagen dentro del editor. Debe quedar marcada con un borde azul.');
+  return null;
+}
+
+function resizeSelectedImage(size) {
+  const img = getSelectedImage();
+  if (!img) return;
+
+  img.classList.remove('course-img-small', 'course-img-medium', 'course-img-large');
+
+  if (size === 'small') {
+    img.classList.add('course-img-small');
+  } else if (size === 'large') {
+    img.classList.add('course-img-large');
+  } else {
+    img.classList.add('course-img-medium');
+  }
+
+  img.classList.add('course-img', 'course-img-center');
+}
+
+function centerSelectedImage() {
+  const img = getSelectedImage();
+  if (!img) return;
+
+  img.classList.add('course-img-center');
+}
+
+function deleteSelectedImage() {
+  const img = getSelectedImage();
+  if (!img) return;
+
+  img.remove();
+  selectedEditorImage = null;
 }
 
 function selectCourseColor(color) {
@@ -635,6 +814,64 @@ async function loadResources(unitId) {
       <i class="fa-solid fa-trash" style="color:var(--red);cursor:pointer" onclick="deleteResource(${r.id})"></i>
     </div>`;
   }).join('');
+}
+
+async function uploadCourseCover() {
+  const input = document.getElementById('courseCoverInput');
+
+  if (!input || !input.files || input.files.length === 0) {
+    alert('Primero selecciona una imagen PNG.');
+    return;
+  }
+
+  const file = input.files[0];
+
+  if (file.type !== 'image/png') {
+    alert('La imagen de portada debe estar en formato PNG.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('course_id', courseId);
+  formData.append('cover', file);
+
+  const res = await fetch('api/course_cover.php', {
+    method: 'POST',
+    body: formData
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
+
+  if (!res.ok) {
+    alert(data.error || 'No se pudo subir la imagen de portada.');
+    return;
+  }
+
+  input.value = '';
+  alert('Imagen de portada actualizada correctamente.');
+}
+
+async function deleteCourseCover() {
+  if (!confirm('¿Eliminar la imagen de portada de este curso?')) return;
+
+  const res = await fetch(`api/course_cover.php?course_id=${courseId}`, {
+    method: 'DELETE'
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
+
+  if (!res.ok) {
+    alert(data.error || 'No se pudo eliminar la imagen de portada.');
+    return;
+  }
+
+  alert('Imagen de portada eliminada correctamente.');
 }
 
 // ── ACTIVIDADES ──
@@ -960,16 +1197,32 @@ loadForums();
 
 <script src="js/app.js"></script>
 <script>
+function escapeAttr(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 async function loadAllCourses() {
   const res = await fetch('api/courses.php');
   const courses = await res.json();
   const grid = document.getElementById('allCoursesGrid');
+
   grid.innerHTML = courses.map(c => `
-    <a class="course-card" href="admin.php?course_id=${c.id}">
-      <div class="course-icon generic"><i class="fa-solid fa-graduation-cap"></i></div>
-      <div class="course-name">${c.name}</div>
-      <div class="course-desc">${c.description || ''}</div>
-      <div class="course-teacher"><i class="fa-solid fa-user-tie"></i> ${c.teacher_name || 'Sin profesor'}</div>
+    <a class="course-card dashboard-course-card" href="admin.php?course_id=${c.id}">
+      <div class="course-card-cover-wrap">
+        ${
+          c.cover_image
+            ? `<img src="${escapeAttr(c.cover_image)}" alt="${escapeAttr(c.name)}" class="course-card-cover">`
+            : `<div class="course-card-cover-placeholder">
+                <i class="fa-solid fa-graduation-cap"></i>
+              </div>`
+        }
+      </div>
+
+      <h3 class="course-card-title">${escapeAttr(c.name)}</h3>
     </a>
   `).join('');
 }

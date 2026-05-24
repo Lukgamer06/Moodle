@@ -15,6 +15,8 @@ CREATE TABLE courses (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     teacher_id INT,
+    card_color VARCHAR(20) NOT NULL DEFAULT '#FFFFFF',
+    cover_image VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (teacher_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;

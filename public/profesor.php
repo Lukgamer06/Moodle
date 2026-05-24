@@ -136,21 +136,34 @@ $course_name = $course['name'];
       <label class="form-label">Presentación del curso</label>
 
       <div class="editor-toolbar">
-        <button type="button" onclick="formatEditor('bold')"><b>B</b></button>
-        <button type="button" onclick="formatEditor('italic')"><i>I</i></button>
-        <button type="button" onclick="formatEditor('underline')"><u>U</u></button>
-        <button type="button" onclick="formatEditor('insertUnorderedList')">
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('bold')">
+          <b>B</b>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('italic')">
+          <i>I</i>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('underline')">
+          <u>U</u>
+        </button>
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('insertUnorderedList')">
           <i class="fa-solid fa-list-ul"></i>
         </button>
-        <button type="button" onclick="formatEditor('justifyLeft')">
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('justifyLeft')">
           <i class="fa-solid fa-align-left"></i>
         </button>
-        <button type="button" onclick="formatEditor('justifyCenter')">
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="formatEditor('justifyCenter')">
           <i class="fa-solid fa-align-center"></i>
         </button>
-        <button type="button" onclick="insertImageUrl('introEditor')">
+
+        <button type="button" onmousedown="event.preventDefault()" onclick="insertImageUrl('introEditor')">
           <i class="fa-solid fa-image"></i> Imagen URL
         </button>
+
         <button type="button" onmousedown="event.preventDefault()" onclick="resizeSelectedImage('small')">
           Imagen pequeña
         </button>
@@ -177,7 +190,12 @@ $course_name = $course['name'];
 
     <div class="form-group">
       <label class="form-label">Color de la caja de presentación</label>
-      <input type="hidden" id="courseCardColor" value="#FFFFFF">
+
+      <input 
+        type="hidden" 
+        id="courseCardColor" 
+        value="<?php echo htmlspecialchars($course['card_color'] ?? '#FFFFFF'); ?>"
+      >
 
       <div class="color-palette">
         <button type="button" class="color-dot" style="background:#FFF9C7" onclick="selectCourseColor('#FFF9C7')" title="Amarillo suave"></button>
@@ -188,9 +206,34 @@ $course_name = $course['name'];
       </div>
     </div>
 
+    <div class="form-group">
+      <label class="form-label">Imagen de portada para el dashboard</label>
+
+      <input 
+        type="file" 
+        id="courseCoverInput" 
+        class="form-input" 
+        accept="image/png"
+      >
+
+      <small style="display:block;margin-top:6px;color:#64748b;">
+        Solo formato PNG. Esta imagen aparecerá en la tarjeta del curso en el dashboard.
+      </small>
+
+      <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="uploadCourseCover()">
+          <i class="fa-solid fa-upload"></i> Subir/Reemplazar portada
+        </button>
+
+        <button type="button" class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="deleteCourseCover()">
+          <i class="fa-solid fa-trash"></i> Eliminar portada
+        </button>
+      </div>
+    </div>
+
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button class="btn btn-ghost" onclick="closeModal('editIntro')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveIntro()">Guardar</button>
+      <button class="btn btn-primary" onclick="saveIntro()">Guardar presentación</button>
     </div>
   </div>
 </div>
@@ -1010,6 +1053,65 @@ async function loadGrades() {
   html += '</tbody>';
   table.innerHTML = html;
 }
+
+async function uploadCourseCover() {
+  const input = document.getElementById('courseCoverInput');
+
+  if (!input || !input.files || input.files.length === 0) {
+    alert('Primero selecciona una imagen PNG.');
+    return;
+  }
+
+  const file = input.files[0];
+
+  if (file.type !== 'image/png') {
+    alert('La imagen de portada debe estar en formato PNG.');
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('course_id', courseId);
+  formData.append('cover', file);
+
+  const res = await fetch('api/course_cover.php', {
+    method: 'POST',
+    body: formData
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
+
+  if (!res.ok) {
+    alert(data.error || 'No se pudo subir la imagen de portada.');
+    return;
+  }
+
+  input.value = '';
+  alert('Imagen de portada actualizada correctamente.');
+}
+
+async function deleteCourseCover() {
+  if (!confirm('¿Eliminar la imagen de portada de este curso?')) return;
+
+  const res = await fetch(`api/course_cover.php?course_id=${courseId}`, {
+    method: 'DELETE'
+  });
+
+  let data = {};
+  try {
+    data = await res.json();
+  } catch (e) {}
+
+  if (!res.ok) {
+    alert(data.error || 'No se pudo eliminar la imagen de portada.');
+    return;
+  }
+
+  alert('Imagen de portada eliminada correctamente.');
+}
+
 function saveGrades() {
   document.querySelectorAll('.grade-input').forEach(async input => {
     const studentId = input.dataset.student;

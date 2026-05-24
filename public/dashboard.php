@@ -90,24 +90,52 @@ document.getElementById('topbarRight').innerHTML = `
     </div>
 `;
 
+function escapeAttr(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
 // Cargar cursos
 async function loadCourses() {
     const res = await fetch('api/courses.php');
     if (!res.ok) return;
+
     const courses = await res.json();
     const grid = document.getElementById('courseGrid');
+
     if (courses.length === 0) {
-        grid.innerHTML = '<div class="empty-state" style="text-align:center;padding:40px;color:var(--gray-400)"><i class="fa-solid fa-book-open" style="font-size:40px"></i><p>No hay cursos</p></div>';
+        grid.innerHTML = `
+            <div class="empty-state" style="text-align:center;padding:40px;color:var(--gray-400)">
+                <i class="fa-solid fa-book-open" style="font-size:40px"></i>
+                <p>No hay cursos</p>
+            </div>
+        `;
         return;
     }
+
     grid.innerHTML = courses.map(course => {
-        const target = currentUser.role === 'teacher' ? 'profesor.php' : (currentUser.role === 'admin' ? 'admin.php' : 'estudiante.php');
-        return `<a class="course-card" href="${target}?course_id=${course.id}">
-            <div class="course-icon generic"><i class="fa-solid fa-graduation-cap"></i></div>
-            <div class="course-name">${course.name}</div>
-            <div class="course-desc">${course.description || ''}</div>
-            <div class="course-teacher"><i class="fa-solid fa-user-tie"></i> ${course.teacher_name || 'Sin profesor'}</div>
-        </a>`;
+        const target = currentUser.role === 'teacher'
+            ? 'profesor.php'
+            : (currentUser.role === 'admin' ? 'admin.php' : 'estudiante.php');
+
+        return `
+            <a class="course-card dashboard-course-card" href="${target}?course_id=${course.id}">
+                <div class="course-card-cover-wrap">
+                    ${
+                        course.cover_image
+                            ? `<img src="${escapeAttr(course.cover_image)}" alt="${escapeAttr(course.name)}" class="course-card-cover">`
+                            : `<div class="course-card-cover-placeholder">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                              </div>`
+                    }
+                </div>
+
+                <h3 class="course-card-title">${escapeAttr(course.name)}</h3>
+            </a>
+        `;
     }).join('');
 }
 
