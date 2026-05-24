@@ -558,6 +558,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Introducción a Laravel desde cero', 'https://www.youtube.com/watch?v=ImtZ5yENzgE', '4 horas y 25 minutos'),
 (@unit_id, 'doc', 'Documentación oficial de Laravel', 'https://laravel.com/docs/13.x', 'Documento completo');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 1', 'Evaluación del módulo 1: Introducción al desarrollo backend y Laravel');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué es Laravel?', 'Un framework de PHP', 'Un sistema operativo', 'Un servidor web', 'Un motor de base de datos', 'a', 1),
+(NULL, @activity_id, '¿Qué comando crea un nuevo proyecto Laravel?', 'laravel new proyecto', 'php new proyecto', 'composer create proyecto', 'php artisan new', 'a', 2),
+(NULL, @activity_id, '¿Qué archivo define las dependencias del proyecto?', 'composer.json', 'package.json', '.env', 'config.php', 'a', 3),
+(NULL, @activity_id, '¿Qué comando inicia el servidor de desarrollo?', 'php artisan serve', 'npm start', 'php start', 'laravel run', 'a', 4),
+(NULL, @activity_id, '¿Qué arquitectura utiliza Laravel?', 'MVC', 'MVVM', 'Clean Architecture', 'Hexagonal', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 2
 -- ============================================================
@@ -577,6 +589,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Configuración de Laravel con XAMPP', 'https://www.youtube.com/watch?v=_Rsen6614Dg', '6:23 minutos'),
 (@unit_id, 'doc', 'Guía de instalación de Composer', 'https://getcomposer.org/doc/', 'Documento técnico');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 2', 'Evaluación del módulo 2: Configuración de entorno y gestión de proyectos');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué herramienta gestiona dependencias en Laravel?', 'Composer', 'NPM', 'Git', 'Docker', 'a', 1),
+(NULL, @activity_id, '¿Qué archivo contiene la configuración de la base de datos?', '.env', 'config.php', 'database.json', 'settings.ini', 'a', 2),
+(NULL, @activity_id, '¿Qué comando ejecuta migraciones?', 'php artisan migrate', 'php artisan db', 'composer migrate', 'php migrate', 'a', 3),
+(NULL, @activity_id, '¿Qué herramienta permite clonar repositorios?', 'Git', 'Composer', 'XAMPP', 'PHP', 'a', 4),
+(NULL, @activity_id, '¿Qué servicio provee MySQL en XAMPP?', 'MariaDB', 'PostgreSQL', 'SQLite', 'OracleDB', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 3
@@ -598,6 +622,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Arquitectura MVC explicada en Laravel', 'https://www.youtube.com/watch?v=tza73mpt2EM', '14:05 minutos'),
 (@unit_id, 'doc', 'Conceptos MVC en Laravel', 'https://laravel.com/docs/13.x/structure', 'Lectura técnica');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 3', 'Evaluación del módulo 3: Arquitectura MVC en Laravel');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué representa la M en MVC?', 'Modelo', 'Middleware', 'Module', 'Manager', 'a', 1),
+(NULL, @activity_id, '¿Qué archivo define las rutas web?', 'routes/web.php', 'app/routes.php', 'config/routes.php', 'public/routes.php', 'a', 2),
+(NULL, @activity_id, '¿Qué comando crea un controlador?', 'php artisan make:controller', 'php artisan controller:create', 'composer make controller', 'php make controller', 'a', 3),
+(NULL, @activity_id, '¿Qué archivo contiene las vistas?', 'resources/views', 'app/views', 'public/views', 'config/views', 'a', 4),
+(NULL, @activity_id, '¿Qué clase interactúa con la base de datos?', 'Modelo', 'Controlador', 'Vista', 'Middleware', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 4
 -- ============================================================
@@ -617,6 +653,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Migraciones en Laravel paso a paso', 'https://www.youtube.com/watch?v=R8B4og-BeCk', '18:53 minutos'),
 (@unit_id, 'doc', 'Documentación oficial de migraciones', 'https://laravel.com/docs/migrations', 'Documento completo');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 4', 'Evaluación del módulo 4: Migraciones y bases de datos');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué comando crea una migración?', 'php artisan make:migration', 'php artisan migration:create', 'composer make migration', 'php migration new', 'a', 1),
+(NULL, @activity_id, '¿Qué método crea una columna en una tabla?', 'Schema::create', 'DB::column', 'Table::add', 'Model::column', 'a', 2),
+(NULL, @activity_id, '¿Qué comando revierte la última migración?', 'php artisan migrate:rollback', 'php artisan migrate:undo', 'php artisan rollback', 'php artisan db:rollback', 'a', 3),
+(NULL, @activity_id, '¿Qué tipo de relación representa belongsTo?', 'Uno a muchos (inverso)', 'Muchos a muchos', 'Uno a uno', 'Muchos a uno', 'a', 4),
+(NULL, @activity_id, '¿Qué archivo configura la conexión a la base de datos?', '.env', 'database.php', 'config.json', 'settings.ini', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 5
@@ -638,6 +686,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Seeders en Laravel', 'https://www.youtube.com/watch?v=zNTF3U2Hsq0', '12:16 minutos'),
 (@unit_id, 'doc', 'Eloquent ORM Documentation', 'https://laravel.com/docs/eloquent', 'Documento completo');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 5', 'Evaluación del módulo 5: Modelos, seeders y factories');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué comando crea un modelo?', 'php artisan make:model', 'php artisan model:create', 'composer make model', 'php model new', 'a', 1),
+(NULL, @activity_id, '¿Qué comando ejecuta los seeders?', 'php artisan db:seed', 'php artisan seed', 'composer seed', 'php seed', 'a', 2),
+(NULL, @activity_id, '¿Qué comando crea un factory?', 'php artisan make:factory', 'php artisan factory:create', 'composer make factory', 'php factory new', 'a', 3),
+(NULL, @activity_id, '¿Qué clase genera datos falsos?', 'Faker', 'Seeder', 'Factory', 'Model', 'a', 4),
+(NULL, @activity_id, '¿Qué método crea múltiples registros con un factory?', 'factory()->count()', 'factory()->many()', 'factory()->repeat()', 'factory()->loop()', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 6
 -- ============================================================
@@ -657,6 +717,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Validaciones en Laravel', 'https://www.youtube.com/watch?v=hafioSprmGs', '25:33 minutos'),
 (@unit_id, 'doc', 'Validaciones oficiales Laravel', 'https://laravel.com/docs/validation', 'Documento técnico');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 6', 'Evaluación del módulo 6: Formularios y validaciones seguras');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué token protege formularios en Laravel?', 'CSRF', 'JWT', 'API Key', 'OAuth', 'a', 1),
+(NULL, @activity_id, '¿Qué método valida datos en un controlador?', '$request->validate()', 'Validator::run()', 'Form::validate()', 'Input::check()', 'a', 2),
+(NULL, @activity_id, '¿Qué regla valida correos?', 'email', 'mail', 'is_email', 'validate_email', 'a', 3),
+(NULL, @activity_id, '¿Qué regla obliga un campo a ser obligatorio?', 'required', 'needed', 'must', 'force', 'a', 4),
+(NULL, @activity_id, '¿Qué archivo contiene mensajes de validación?', 'lang/es/validation.php', 'config/validation.php', 'resources/validation.php', 'app/validation.php', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 7
@@ -678,6 +750,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Subida de imágenes en Laravel', 'https://www.youtube.com/watch?v=SiKPB69lJX0', '5:11 minutos'),
 (@unit_id, 'doc', 'File Storage Laravel', 'https://laravel.com/docs/filesystem', 'Documento completo');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 7', 'Evaluación del módulo 7: Gestión de archivos e imágenes');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué método guarda archivos en Laravel?', 'store()', 'saveFile()', 'upload()', 'put()', 'a', 1),
+(NULL, @activity_id, '¿Qué carpeta almacena archivos públicos?', 'storage/app/public', 'public/files', 'app/public', 'resources/files', 'a', 2),
+(NULL, @activity_id, '¿Qué comando crea un enlace simbólico para storage?', 'php artisan storage:link', 'php artisan link:storage', 'php artisan make:storage', 'php artisan storage:create', 'a', 3),
+(NULL, @activity_id, '¿Qué método obtiene la ruta pública?', 'asset()', 'path()', 'url()', 'public()', 'a', 4),
+(NULL, @activity_id, '¿Qué driver usa Laravel por defecto para storage?', 'local', 's3', 'ftp', 'gcs', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 8
 -- ============================================================
@@ -697,6 +781,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'CRUD completo en Laravel', 'https://www.youtube.com/watch?v=GrUrw245L48', '1 hora 15 minutos'),
 (@unit_id, 'doc', 'Laravel Resource Controllers', 'https://laravel.com/docs/controllers', 'Documento técnico');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 8', 'Evaluación del módulo 8: CRUD completo en Laravel');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué método muestra un formulario de creación?', 'create()', 'store()', 'edit()', 'index()', 'a', 1),
+(NULL, @activity_id, '¿Qué método guarda un registro?', 'store()', 'save()', 'insert()', 'add()', 'a', 2),
+(NULL, @activity_id, '¿Qué método actualiza un registro?', 'update()', 'modify()', 'change()', 'edit()', 'a', 3),
+(NULL, @activity_id, '¿Qué método elimina un registro?', 'destroy()', 'delete()', 'remove()', 'drop()', 'a', 4),
+(NULL, @activity_id, '¿Qué comando crea un controlador resource?', 'php artisan make:controller NombreController --resource', 'php artisan controller:resource', 'composer make resource', 'php artisan make:resource', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 9
@@ -718,6 +814,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Crear APIs REST en Laravel', 'https://www.youtube.com/watch?v=YGqCZjdgJJk', '1 hora y 50 minutos'),
 (@unit_id, 'doc', 'APIs y JSON en Laravel', 'https://laravel.com/docs/sanctum', 'Documento completo');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 9', 'Evaluación del módulo 9: APIs REST y microservicios');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué formato usan las APIs REST?', 'JSON', 'XML', 'HTML', 'TXT', 'a', 1),
+(NULL, @activity_id, '¿Qué comando crea un controlador API?', 'php artisan make:controller NombreController --api', 'php artisan api:controller', 'composer make api', 'php artisan make:api', 'a', 2),
+(NULL, @activity_id, '¿Qué método HTTP obtiene datos?', 'GET', 'POST', 'PUT', 'DELETE', 'a', 3),
+(NULL, @activity_id, '¿Qué paquete maneja tokens en Laravel?', 'Sanctum', 'JWT', 'OAuth', 'Passport', 'a', 4),
+(NULL, @activity_id, '¿Qué es un microservicio?', 'Un servicio pequeño e independiente', 'Un servidor físico', 'Un archivo JSON', 'Un controlador', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 10
 -- ============================================================
@@ -737,6 +845,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'video', 'Diseño responsive con Flexbox y Grid', 'https://www.youtube.com/watch?v=3YW65K6LcIA', '46 minutos'),
 (@unit_id, 'doc', 'Responsive Web Design', 'https://developer.mozilla.org/es/docs/Learn_web_development/Core/CSS_layout/Responsive_Design', 'Lectura completa');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 10', 'Evaluación del módulo 10: Diseño responsive y despliegue');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué tecnología permite diseño responsive?', 'CSS Flexbox y Grid', 'PHP', 'MySQL', 'Blade', 'a', 1),
+(NULL, @activity_id, '¿Qué comando genera build de frontend?', 'npm run build', 'php artisan build', 'composer build', 'npm build', 'a', 2),
+(NULL, @activity_id, '¿Qué servicio permite desplegar proyectos?', 'Vercel', 'MySQL', 'Composer', 'Git', 'a', 3),
+(NULL, @activity_id, '¿Qué archivo define dependencias frontend?', 'package.json', 'composer.json', 'webpack.mix.js', 'vite.config.js', 'a', 4),
+(NULL, @activity_id, '¿Qué concepto permite adaptar interfaces a pantallas?', 'Responsive Design', 'API Design', 'MVC', 'ORM', 'a', 5);
 
 -- ============================================================
 -- FOROS DEL CURSO BACKEND
@@ -874,6 +994,19 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Introducción al aprendizaje automático con scikit-learn', 'https://scikit-learn.org/stable/supervised_learning.html', 'Documento web de consulta'),
 (@unit_id, 'doc', 'Machine Learning Crash Course', 'https://developers.google.com/machine-learning/crash-course', 'Curso web organizado por módulos');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 1', 'Evaluación del módulo 1: Fundamentos de IA y aprendizaje automático');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué es un modelo supervisado?', 'Un modelo con etiquetas conocidas', 'Un modelo sin etiquetas', 'Un modelo que no usa datos', 'Un modelo que solo usa texto', 'a', 1),
+(NULL, @activity_id, '¿Qué es un label?', 'La variable que se desea predecir', 'Una columna irrelevante', 'Un identificador único', 'Un valor faltante', 'a', 2),
+(NULL, @activity_id, '¿Qué tipo de problema predice categorías?', 'Clasificación', 'Regresión', 'Clustering', 'Reducción de dimensionalidad', 'a', 3),
+(NULL, @activity_id, '¿Qué tipo de modelo busca grupos sin etiqueta?', 'No supervisado', 'Supervisado', 'Regresión', 'Clasificación', 'a', 4),
+(NULL, @activity_id, '¿Qué representan los features?', 'Variables de entrada', 'La etiqueta', 'Los valores faltantes', 'Los datos atípicos', 'a', 5);
+
+
 -- ============================================================
 -- UNIDAD 2
 -- ============================================================
@@ -893,6 +1026,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Primeros pasos con pandas', 'https://pandas.pydata.org/docs/getting_started/index.html', 'Documento web de consulta'),
 (@unit_id, 'doc', 'Tutoriales introductorios de pandas', 'https://pandas.pydata.org/docs/getting_started/intro_tutorials/', 'Serie de tutoriales cortos');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 2', 'Evaluación del módulo 2: Análisis exploratorio de datos');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué comando muestra estadísticas básicas?', 'describe()', 'info()', 'unique()', 'columns', 'a', 1),
+(NULL, @activity_id, '¿Qué gráfico ayuda a ver la distribución?', 'Histograma', 'Mapa de calor', 'Diagrama de red', 'Gráfico de dispersión 3D', 'a', 2),
+(NULL, @activity_id, '¿Qué comando muestra tipos de datos?', 'info()', 'describe()', 'value_counts()', 'plot()', 'a', 3),
+(NULL, @activity_id, '¿Qué medida representa el valor central?', 'Mediana', 'Máximo', 'Mínimo', 'Rango', 'a', 4),
+(NULL, @activity_id, '¿Qué gráfico detecta outliers fácilmente?', 'Caja de bigotes', 'Barras', 'Líneas', 'Pastel', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 3
@@ -914,6 +1059,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Preprocesamiento de datos en scikit-learn', 'https://scikit-learn.org/stable/modules/preprocessing.html', 'Documento web de consulta'),
 (@unit_id, 'doc', 'Guía de usuario de pandas', 'https://pandas.pydata.org/docs/user_guide/index.html', 'Documento web amplio de referencia');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 3', 'Evaluación del módulo 3: Limpieza de datos y valores faltantes');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué método rellena valores con la media?', 'SimpleImputer(strategy="mean")', 'fillna("mode")', 'dropna()', 'replace()', 'a', 1),
+(NULL, @activity_id, '¿Qué comando elimina filas con nulos?', 'dropna()', 'fillna()', 'replace()', 'remove()', 'a', 2),
+(NULL, @activity_id, '¿Qué es un valor atípico?', 'Un valor extremadamente alejado del resto', 'Un valor faltante', 'Un valor duplicado', 'Un valor categórico', 'a', 3),
+(NULL, @activity_id, '¿Qué método copia el valor anterior?', 'ffill', 'bfill', 'mean', 'mode', 'a', 4),
+(NULL, @activity_id, '¿Qué gráfico ayuda a detectar outliers?', 'Boxplot', 'Pie chart', 'Heatmap', 'Barplot', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 4
 -- ============================================================
@@ -933,6 +1090,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Codificación y preprocesamiento en scikit-learn', 'https://scikit-learn.org/stable/modules/preprocessing.html', 'Documento web de consulta'),
 (@unit_id, 'doc', '10 minutos con pandas', 'https://pandas.pydata.org/docs/user_guide/10min.html', 'Guía corta de inicio');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 4', 'Evaluación del módulo 4: Codificación de variables categóricas');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué técnica convierte categorías en columnas binarias?', 'One-hot encoding', 'LabelEncoder', 'OrdinalEncoder', 'Frequency encoding', 'a', 1),
+(NULL, @activity_id, '¿Qué técnica asigna números según orden?', 'OrdinalEncoder', 'One-hot', 'Dummy encoding', 'Hashing', 'a', 2),
+(NULL, @activity_id, '¿Qué tipo de variable no tiene orden?', 'Nominal', 'Ordinal', 'Binaria', 'Numérica', 'a', 3),
+(NULL, @activity_id, '¿Qué método usa pandas para dummies?', 'get_dummies()', 'dummy()', 'encode()', 'categorize()', 'a', 4),
+(NULL, @activity_id, '¿Qué dato NO debe tratarse como número?', 'Cédula', 'Edad', 'Ingresos', 'Temperatura', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 5
@@ -954,6 +1123,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'StandardScaler en scikit-learn', 'https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html', 'Documento técnico de consulta'),
 (@unit_id, 'doc', 'Preprocesamiento de datos', 'https://scikit-learn.org/stable/modules/preprocessing_targets.html#', 'Documento web de consulta');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 5', 'Evaluación del módulo 5: Normalización y escalamiento');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué técnica escala entre 0 y 1?', 'MinMaxScaler', 'StandardScaler', 'Normalizer', 'RobustScaler', 'a', 1),
+(NULL, @activity_id, '¿Qué técnica centra en media 0 y varianza 1?', 'StandardScaler', 'MinMaxScaler', 'Normalizer', 'LogScaler', 'a', 2),
+(NULL, @activity_id, '¿Qué es una característica derivada?', 'Una columna creada a partir de otra', 'Un valor faltante', 'Un outlier', 'Una etiqueta', 'a', 3),
+(NULL, @activity_id, '¿Qué método transforma fechas en variables útiles?', 'Feature engineering', 'Encoding', 'Scaling', 'Cleaning', 'a', 4),
+(NULL, @activity_id, '¿Qué problema resuelve el escalamiento?', 'Diferencias grandes entre rangos', 'Valores duplicados', 'Datos categóricos', 'Errores de tipeo', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 6
 -- ============================================================
@@ -973,6 +1154,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Selección de características en scikit-learn', 'https://scikit-learn.org/stable/modules/feature_selection.html', 'Documento web de consulta'),
 (@unit_id, 'doc', 'SelectKBest', 'https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectKBest.html', 'Documento técnico de referencia');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 6', 'Evaluación del módulo 6: Selección de características');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué hace VarianceThreshold?', 'Elimina columnas con baja varianza', 'Escala datos', 'Detecta outliers', 'Codifica categorías', 'a', 1),
+(NULL, @activity_id, '¿Qué técnica selecciona las mejores k variables?', 'SelectKBest', 'PCA', 'MinMaxScaler', 'LabelEncoder', 'a', 2),
+(NULL, @activity_id, '¿Qué prueba usa SelectKBest para clasificación?', 'Chi-cuadrado', 'ANOVA', 'Pearson', 'Spearman', 'a', 3),
+(NULL, @activity_id, '¿Por qué eliminar columnas irrelevantes?', 'Para reducir ruido', 'Para aumentar columnas', 'Para duplicar datos', 'Para evitar escalamiento', 'a', 4),
+(NULL, @activity_id, '¿Qué significa alta dimensionalidad?', 'Demasiadas columnas', 'Demasiados registros', 'Muchos nulos', 'Muchos outliers', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 7
@@ -994,6 +1187,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Aprendizaje supervisado en scikit-learn', 'https://scikit-learn.org/stable/supervised_learning.html', 'Documento web de consulta'),
 (@unit_id, 'doc', 'Clasificación en Machine Learning Crash Course', 'https://developers.google.com/machine-learning/crash-course/classification', 'Módulo web de aprendizaje');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 7', 'Evaluación del módulo 7: Modelos supervisados');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué método entrena un modelo?', 'fit()', 'train()', 'learn()', 'model()', 'a', 1),
+(NULL, @activity_id, '¿Qué método genera predicciones?', 'predict()', 'forecast()', 'estimate()', 'output()', 'a', 2),
+(NULL, @activity_id, '¿Qué tipo de problema predice valores numéricos?', 'Regresión', 'Clasificación', 'Clustering', 'Balanceo', 'a', 3),
+(NULL, @activity_id, '¿Qué se divide en train y test?', 'El dataset', 'Los modelos', 'Los gráficos', 'Los labels', 'a', 4),
+(NULL, @activity_id, '¿Qué representa X en IA?', 'Variables de entrada', 'La etiqueta', 'Los outliers', 'Los valores faltantes', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 8
 -- ============================================================
@@ -1013,6 +1218,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Mapa para escoger estimadores en scikit-learn', 'https://scikit-learn.org/stable/machine_learning_map.html', 'Recurso visual interactivo'),
 (@unit_id, 'doc', 'Guía de usuario de scikit-learn', 'https://scikit-learn.org/stable/user_guide.html', 'Documento web completo de referencia');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 8', 'Evaluación del módulo 8: Modelos de clasificación');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué modelo usa vecinos cercanos?', 'KNN', 'SVM', 'Naive Bayes', 'Árboles', 'a', 1),
+(NULL, @activity_id, '¿Qué modelo usa fronteras de decisión?', 'SVM', 'KNN', 'Naive Bayes', 'Random Forest', 'a', 2),
+(NULL, @activity_id, '¿Qué modelo usa probabilidades?', 'Naive Bayes', 'KNN', 'SVM', 'Árboles', 'a', 3),
+(NULL, @activity_id, '¿Qué modelo toma decisiones por ramas?', 'Árboles de decisión', 'KNN', 'SVM', 'Naive Bayes', 'a', 4),
+(NULL, @activity_id, '¿Qué riesgo tienen los árboles profundos?', 'Sobreentrenamiento', 'Subentrenamiento', 'No convergen', 'No clasifican', 'a', 5);
 
 -- ============================================================
 -- UNIDAD 9
@@ -1034,6 +1251,18 @@ INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Clustering en scikit-learn', 'https://scikit-learn.org/stable/modules/clustering.html', 'Documento web de consulta'),
 (@unit_id, 'doc', 'KMeans en scikit-learn', 'https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html', 'Documento técnico de referencia');
 
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 9', 'Evaluación del módulo 9: Modelos no supervisados y balanceo');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué modelo agrupa datos sin etiqueta?', 'Clustering', 'Regresión', 'Clasificación', 'Árboles', 'a', 1),
+(NULL, @activity_id, '¿Qué técnica crea datos sintéticos?', 'SMOTE', 'MinMax', 'KNN', 'SVM', 'a', 2),
+(NULL, @activity_id, '¿Qué es under sampling?', 'Reducir datos mayoritarios', 'Aumentar datos minoritarios', 'Eliminar outliers', 'Duplicar registros', 'a', 3),
+(NULL, @activity_id, '¿Qué es over sampling?', 'Aumentar datos minoritarios', 'Reducir datos mayoritarios', 'Eliminar columnas', 'Escalar datos', 'a', 4),
+(NULL, @activity_id, '¿Qué modelo es no supervisado?', 'KMeans', 'SVM', 'KNN', 'Árboles', 'a', 5);
+
 -- ============================================================
 -- UNIDAD 10
 -- ============================================================
@@ -1053,6 +1282,18 @@ SET @unit_id := LAST_INSERT_ID();
 INSERT INTO resources (unit_id, type, name, file_path, meta) VALUES
 (@unit_id, 'doc', 'Métricas y evaluación de modelos en scikit-learn', 'https://scikit-learn.org/stable/modules/model_evaluation.html', 'Documento web de consulta'),
 (@unit_id, 'doc', 'Despliegue de aplicaciones en Streamlit Community Cloud', 'https://docs.streamlit.io/deploy/streamlit-community-cloud', 'Guía web paso a paso');
+
+INSERT INTO activities (unit_id, activity_type, title, description)
+VALUES (@unit_id, 'quiz', 'Examen del Módulo 10', 'Evaluación del módulo 10: Métricas, ensambles y despliegue');
+
+SET @activity_id := LAST_INSERT_ID();
+
+INSERT INTO quiz_questions VALUES
+(NULL, @activity_id, '¿Qué métrica mide precisión global?', 'Accuracy', 'Recall', 'AUC', 'RMSE', 'a', 1),
+(NULL, @activity_id, '¿Qué modelo es un ensamble?', 'Random Forest', 'KNN', 'SVM', 'Naive Bayes', 'a', 2),
+(NULL, @activity_id, '¿Qué archivo guarda modelos en Python?', 'joblib', 'pickle', 'json', 'csv', 'a', 3),
+(NULL, @activity_id, '¿Qué curva evalúa clasificación?', 'ROC', 'Histograma', 'Boxplot', 'Scatter', 'a', 4),
+(NULL, @activity_id, '¿Qué herramienta permite desplegar apps?', 'Streamlit', 'Excel', 'PowerPoint', 'Photoshop', 'a', 5);
 
 -- ============================================================
 -- FOROS DEL CURSO DE IA
