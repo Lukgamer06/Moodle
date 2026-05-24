@@ -84,15 +84,25 @@ SET @teacher_id := (
 );
 
 -- Crear curso
-INSERT INTO courses (name, description, teacher_id, card_color)
+INSERT INTO courses (name, description, teacher_id, card_color, cover_image)
 VALUES (
   @course_name,
-  '<h2>Bienvenida</h2>
-  <p>Bienvenidos al curso de Infraestructura Tecnológica. En este espacio aprenderemos los fundamentos necesarios para comprender cómo funcionan los servicios, redes y servidores que soportan las soluciones tecnológicas actuales. A lo largo del curso trabajaremos tanto conceptos teóricos como actividades prácticas, permitiendo que cada estudiante pueda fortalecer sus habilidades en administración de sistemas, virtualización, redes y servicios web.</p>
-  <h2>Propósito</h2>
-  <p>El propósito de este curso es que los estudiantes logren comprender y aplicar los conceptos básicos de infraestructura tecnológica mediante prácticas orientadas a la configuración de sistemas Linux, administración de redes, virtualización, servicios web y bases de datos. Asimismo, se busca fortalecer la capacidad de resolver problemas técnicos, implementar servicios y entender la comunicación entre dispositivos dentro de un entorno informático moderno.</p>',
+  '<h2 style="text-align:center;">Bienvenida</h2>
+
+  <p>Bienvenidos al curso de Infraestructura Tecnológica. En este espacio aprenderemos los fundamentos necesarios para comprender cómo funcionan los servicios, redes y servidores que soportan las soluciones tecnológicas actuales. A lo largo del curso trabajaremos tanto conceptos teóricos como actividades prácticas, permitiendo que cada estudiante pueda fortalecer sus habilidades en administración de sistemas, virtualización, redes y servicios web. Además, se utilizarán herramientas reales del entorno profesional, facilitando así una experiencia cercana a lo que se vive en el mundo laboral de TI.</p>
+
+  <h2 style="text-align:center;">Propósito</h2>
+
+  <p>El propósito de este curso es que los estudiantes logren comprender y aplicar los conceptos básicos de infraestructura tecnológica mediante prácticas orientadas a la configuración de sistemas Linux, administración de redes, virtualización, servicios web y bases de datos. Asimismo, se busca fortalecer la capacidad de resolver problemas técnicos, implementar servicios y entender la comunicación entre dispositivos dentro de un entorno informático moderno.</p>
+
+  <img 
+    src="https://i.pinimg.com/736x/98/d5/49/98d549f3ff77bc01218df66bd3914eb1.jpg" 
+    alt="Imagen Infraestructura Tecnológica" 
+    class="course-img course-img-medium course-img-center"
+  >',
   @teacher_id,
-  '#C7D1FF'
+  '#C7D1FF',
+  'assets/course-covers/infraestructura.png'
 );
 
 SET @course_id := LAST_INSERT_ID();
