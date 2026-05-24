@@ -63,30 +63,158 @@ function setupForumDrawer(openBtnId, closeBtnId, drawerId, overlayId) {
   if (closeBtn) closeBtn.onclick = () => { drawer.classList.remove('open'); overlay.classList.remove('show'); };
   if (overlay) overlay.onclick = () => { drawer.classList.remove('open'); overlay.classList.remove('show'); };
 }
+
+// Gestión de temas (topics) - 3 niveles: Foros → Temas → Mensajes
+let currentForum = null;
+let currentTopic = null;
+
 function toggleForum(btn) {
   const body = btn.nextElementSibling;
   const isOpen = body.style.display === 'block';
   document.querySelectorAll('.forum-body').forEach(b => b.style.display = 'none');
   document.querySelectorAll('.forum-header').forEach(h => h.classList.remove('open'));
   if (!isOpen) {
+    const forumId = body.dataset.forumId;
     body.style.display = 'block';
     btn.classList.add('open');
+    currentForum = forumId;
+    currentTopic = null;
+    loadTopics(forumId);
   }
 }
+
+async function loadTopics(forumId) {
+  const container = document.querySelector(`.forum-body[data-forum-id="${forumId}"] .topics-list`);
+  if (!container) return;
+  
+  try {
+    const res = await fetch(`api/topics.php?forum_id=${forumId}`);
+    if (!res.ok) throw new Error('Error cargando temas');
+    const topics = await res.json();
+    
+    if (topics.length === 0) {
+      container.innerHTML = '<p style="font-size:12px;color:var(--gray-400);text-align:center;padding:12px;">Sin temas aún</p>';
+      return;
+    }
+    
+    container.innerHTML = topics.map(t => `
+      <div class="topic-item" onclick="selectTopic(this, ${t.id}, ${forumId})">
+        <div class="topic-title">${escapeHtml(t.title)}</div>
+        <div class="topic-meta">por ${t.created_by_name} • ${new Date(t.created_at).toLocaleDateString('es-ES')}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = '<p style="font-size:12px;color:var(--red)">Error cargando temas</p>';
+  }
+}
+
+async function selectTopic(el, topicId, forumId) {
+  document.querySelectorAll('.topic-item').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentTopic = topicId;
+  
+  const body = document.querySelector(`.forum-body[data-forum-id="${forumId}"]`);
+  if (!body) return;
+  
+  loadTopicMessages(topicId, body);
+}
+
+async function loadTopicMessages(topicId, container) {
+  const messagesContainer = container.querySelector('.messages-container');
+  if (!messagesContainer) return;
+  
+  try {
+    const res = await fetch(`api/messages.php?topic_id=${topicId}`);
+    if (!res.ok) throw new Error('Error cargando mensajes');
+    const messages = await res.json();
+    
+    messagesContainer.innerHTML = messages.map(m => `
+      <div class="message">
+        <p class="msg-user">${escapeHtml(m.user_name)}</p>
+        <p class="msg-text">${escapeHtml(m.content)}</p>
+      </div>
+    `).join('');
+    
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  } catch (err) {
+    console.error(err);
+    messagesContainer.innerHTML = '<p style="font-size:12px;color:var(--red)">Error cargando mensajes</p>';
+  }
+}
+
 async function sendMsg(btn) {
+  if (!currentTopic) {
+    alert('Selecciona un tema primero');
+    return;
+  }
+  
   const ta = btn.previousElementSibling;
   const content = ta.value.trim();
   if (!content) return;
-  const forumId = btn.closest('.forum-body').dataset.forumId;
-  if (!forumId) return;
-  await fetch('api/messages.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ forum_id: forumId, content })
-  });
-  ta.value = '';
-  if (typeof loadForumMessages === 'function') loadForumMessages(forumId, btn.closest('.forum-body'));
+  
+  try {
+    const res = await fetch('api/messages.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ forum_id: currentForum, topic_id: currentTopic, content })
+    });
+    
+    if (!res.ok) throw new Error('Error enviando mensaje');
+    
+    ta.value = '';
+    const body = btn.closest('.forum-body');
+    loadTopicMessages(currentTopic, body);
+  } catch (err) {
+    console.error(err);
+    alert('Error al enviar mensaje');
+  }
 }
+
+function showNewForumTopicModal() {
+  if (!currentForum) {
+    alert('Selecciona un foro primero');
+    return;
+  }
+  openModal('newForumTopic');
+}
+
+async function createForumTopic() {
+  if (!currentForum) return;
+  
+  const title = document.getElementById('newForumTopicTitle').value.trim();
+  const description = document.getElementById('newForumTopicDesc').value.trim();
+  
+  if (!title) {
+    alert('El título es requerido');
+    return;
+  }
+  
+  try {
+    const res = await fetch('api/topics.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ forum_id: currentForum, title, description })
+    });
+    
+    if (!res.ok) throw new Error('Error creando tema');
+    
+    document.getElementById('newForumTopicTitle').value = '';
+    document.getElementById('newForumTopicDesc').value = '';
+    closeModal('newForumTopic');
+    loadTopics(currentForum);
+  } catch (err) {
+    console.error(err);
+    alert('Error al crear tema');
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 
 // ── CERRAR SESIÓN ──
 function logout() {
